@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en" class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agricultural Data Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="container mx-auto p-8">
+
+  <!-- Header -->
+  <h1 class="text-3xl font-bold mb-6">Agricultural Data Dashboard 🌾</h1>
+  <button id="toggleDarkMode" class="mb-6 px-4 py-2 bg-blue-500 text-white rounded-lg">
+    Toggle Dark Mode
+  </button>
+
+  <!-- Preprocessing Summary -->
+  <section class="mb-12">
+    <h2 class="text-2xl font-semibold mb-4">📊 Preprocessing Summary</h2>
+    <pre class="bg-gray-200 dark:bg-gray-800 p-4 rounded-lg overflow-x-auto">
+{{summary_stats}}
+    </pre>
+  </section>
+
+  <!-- Visualizations -->
+  <section class="mb-12">
+    <h2 class="text-2xl font-semibold mb-4">📈 Visualizations</h2>
+    <div class="grid grid-cols-2 gap-6">
+      {% for img in plots %}
+        <img src="{{img}}" alt="Visualization" class="rounded-lg shadow-lg">
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- Model Performance -->
+  <section class="mb-12">
+    <h2 class="text-2xl font-semibold mb-4">🤖 Model Performance</h2>
+    <pre class="bg-gray-200 dark:bg-gray-800 p-4 rounded-lg overflow-x-auto">
+{{model_performance}}
+    </pre>
+  </section>
+
+  <!-- Real-time Prediction -->
+  <section>
+    <h2 class="text-2xl font-semibold mb-4">⚡ Real-Time Crop Yield Prediction</h2>
+    <form id="predictionForm" class="grid grid-cols-2 gap-4">
+      <div>
+        <label for="area" class="block">Area (ha)</label>
+        <input type="number" id="area" class="w-full p-2 border rounded-lg">
+      </div>
+      <div>
+        <label for="rainfall" class="block">Average Rainfall (mm)</label>
+        <input type="number" id="rainfall" class="w-full p-2 border rounded-lg">
+      </div>
+      <div>
+        <label for="pesticides" class="block">Pesticides (tonnes)</label>
+        <input type="number" id="pesticides" class="w-full p-2 border rounded-lg">
+      </div>
+      <div>
+        <label for="temperature" class="block">Average Temperature (°C)</label>
+        <input type="number" id="temperature" class="w-full p-2 border rounded-lg">
+      </div>
+    </form>
+    <button onclick="predictYield()" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg mt-4">
+      Predict Yield
+    </button>
+    <p id="prediction-result" class="mt-4 font-bold text-lg text-blue-600"></p>
+  </section>
+
+  <!-- Dark Mode Script -->
+  <script>
+    document.getElementById("toggleDarkMode").addEventListener("click", () => {
+      document.documentElement.classList.toggle("dark");
+    });
+  </script>
+
+  <!-- Real-time Prediction Script -->
+  <script>
+    let coefficients = null;
+
+    async function loadCoefficients() {
+      try {
+        const response = await fetch('model_coefficients.json');
+        coefficients = await response.json();
+        console.log("Loaded coefficients:", coefficients);
+      } catch (error) {
+        console.error("Error loading coefficients:", error);
+      }
+    }
+
+    function predictYield() {
+      if (!coefficients) {
+        alert("Model coefficients not loaded yet!");
+        return;
+      }
+
+      let area = parseFloat(document.getElementById('area').value) || 0;
+      let rainfall = parseFloat(document.getElementById('rainfall').value) || 0;
+      let pesticides = parseFloat(document.getElementById('pesticides').value) || 0;
+      let temperature = parseFloat(document.getElementById('temperature').value) || 0;
+
+      let features = [area, rainfall, pesticides, temperature];
+      let prediction = coefficients.intercept;
+
+      for (let i = 0; i < features.length; i++) {
+        prediction += coefficients.coef[i] * features[i];
+      }
+
+      document.getElementById('prediction-result').innerText =
+        `Predicted Yield: ${prediction.toFixed(2)} hg/ha`;
+    }
+
+    loadCoefficients();
+  </script>
+</body>
+</html>

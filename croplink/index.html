@@ -1,0 +1,468 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AgriPredict AI - Crop Yield Prediction</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0; padding: 0;
+            background: #f9fafb;
+            color: #333;
+        }
+        header {
+            background-color: #1f77b4;
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+        header p {
+            margin: 0.5rem 0 0;
+            font-size: 1.2rem;
+            font-weight: 300;
+        }
+        main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        section {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+        }
+        h2 {
+            color: #ff7f0e;
+            margin-bottom: 1rem;
+        }
+        label {
+            display: block;
+            margin: 0.75rem 0 0.25rem;
+            font-weight: 600;
+        }
+        input[type="text"], input[type="number"], select {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        button {
+            background-color: #1f77b4;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-size: 1.1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #155d8b;
+        }
+        .flex-row {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .flex-col {
+            flex: 1 1 300px;
+        }
+        #map-snapshot {
+            width: 100%;
+            height: 300px;
+            background-color: #e0e0e0;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-style: italic;
+            user-select: none;
+        }
+        .result-card {
+            background-color: #f0f2f6;
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: inset 0 0 5px #ccc;
+        }
+        .result-card h3 {
+            margin: 0.5rem 0;
+            color: #1f77b4;
+        }
+        .result-card p {
+            font-size: 1.5rem;
+            margin: 0;
+            font-weight: 700;
+        }
+        footer {
+            text-align: center;
+            padding: 1rem;
+            color: #777;
+            font-size: 0.9rem;
+        }
+        @media (max-width: 600px) {
+            .flex-row {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>AgriPredict AI</h1>
+        <p>Advanced AI-powered crop yield prediction and optimization platform for modern farming</p>
+    </header>
+    <main>
+        <section>
+            <h2>📍 Location & Area Selection</h2>
+            <label for="location-input">Enter Location (City or Address):</label>
+            <input type="text" id="location-input" placeholder="e.g., Hyderabad, India" />
+            <button id="btn-get-coords">Get Coordinates</button>
+            <div class="flex-row" style="margin-top:1rem;">
+                <div class="flex-col">
+                    <label for="latitude">Latitude:</label>
+                    <input type="number" id="latitude" step="0.000001" />
+                </div>
+                <div class="flex-col">
+                    <label for="longitude">Longitude:</label>
+                    <input type="number" id="longitude" step="0.000001" />
+                </div>
+            </div>
+            <div id="map-snapshot" style="margin-top:1rem;">
+                Map snapshot will appear here (integrate Google Maps or Leaflet)
+            </div>
+            <label for="area-input" style="margin-top:1rem;">Field Area (hectares):</label>
+            <input type="number" id="area-input" min="1" max="100" step="0.1" value="1" />
+        </section>
+
+        <section>
+            <h2>🌤️ Weather & Soil Data</h2>
+            <div class="flex-row">
+                <div class="flex-col">
+                    <label for="weather-api-key">OpenWeatherMap API Key:</label>
+                    <input type="text" id="weather-api-key" placeholder="Enter your API key" />
+                    <button id="btn-fetch-weather" style="margin-top:0.5rem;">Fetch Weather Data</button>
+                    <div id="weather-data" style="margin-top:1rem; font-style: italic; color: #555;">
+                        Weather data will be displayed here.
+                    </div>
+                </div>
+                <div class="flex-col">
+                    <button id="btn-fetch-soil" style="margin-top:2rem;">Fetch Soil Data</button>
+                    <div id="soil-data" style="margin-top:1rem; font-style: italic; color: #555;">
+                        Soil data will be displayed here.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>🌱 Crop & Monitoring Inputs</h2>
+            <div class="flex-row">
+                <div class="flex-col">
+                    <label for="state-select">State:</label>
+                    <select id="state-select">
+                        <option value="Andaman and Nicobar Islands">Andaman and Nicobar Islands</option><option value="Andhra Pradesh">Andhra Pradesh</option><option value="Arunachal Pradesh">Arunachal Pradesh</option><option value="Assam">Assam</option><option value="Bihar">Bihar</option><option value="Chandigarh">Chandigarh</option><option value="Chhattisgarh">Chhattisgarh</option><option value="Dadra and Nagar Haveli and Daman and Diu">Dadra and Nagar Haveli and Daman and Diu</option><option value="Delhi">Delhi</option><option value="Goa">Goa</option><option value="Gujarat">Gujarat</option><option value="Haryana">Haryana</option><option value="Himachal Pradesh">Himachal Pradesh</option><option value="Jammu and Kashmir">Jammu and Kashmir</option><option value="Jharkhand">Jharkhand</option><option value="Karnataka">Karnataka</option><option value="Kerala">Kerala</option><option value="Ladakh">Ladakh</option><option value="Lakshadweep">Lakshadweep</option><option value="Madhya Pradesh">Madhya Pradesh</option><option value="Maharashtra">Maharashtra</option><option value="Manipur">Manipur</option><option value="Meghalaya">Meghalaya</option><option value="Mizoram">Mizoram</option><option value="Nagaland">Nagaland</option><option value="Odisha">Odisha</option><option value="Puducherry">Puducherry</option><option value="Punjab">Punjab</option><option value="Rajasthan">Rajasthan</option><option value="Sikkim">Sikkim</option><option value="Tamil Nadu">Tamil Nadu</option><option value="Telangana">Telangana</option><option value="Tripura">Tripura</option><option value="Uttar Pradesh">Uttar Pradesh</option><option value="Uttarakhand">Uttarakhand</option><option value="West Bengal">West Bengal</option>
+                    </select>
+
+                    <label for="district-select" style="margin-top:1rem;">District:</label>
+                    <select id="district-select">
+                        <option value="Anantapur">Anantapur</option><option value="Chittoor">Chittoor</option><option value="East Godavari">East Godavari</option><option value="Guntur">Guntur</option><option value="Krishna">Krishna</option><option value="Kurnool">Kurnool</option><option value="Prakasam">Prakasam</option><option value="Srikakulam">Srikakulam</option><option value="Visakhapatnam">Visakhapatnam</option><option value="Vizianagaram">Vizianagaram</option><option value="West Godavari">West Godavari</option><option value="YSR Kadapa">YSR Kadapa</option>
+                    </select>
+
+                    <label for="crop-year">Crop Year:</label>
+                    <input type="number" id="crop-year" min="1990" max="2050" value="2025" />
+
+                    <label for="season-select" style="margin-top:1rem;">Season:</label>
+                    <select id="season-select">
+                        <option>Kharif</option>
+                        <option>Rabi</option>
+                        <option>Summer</option>
+                    </select>
+
+                    <label for="crop-select" style="margin-top:1rem;">Crop:</label>
+                    <select id="crop-select">
+                        <option>Rice</option>
+                        <option>Wheat</option>
+                        <option>Maize</option>
+                        <!-- Add more crops -->
+                    </select>
+
+                    <label for="soil-moisture" style="margin-top:1rem;">Soil Moisture (%):</label>
+                    <input type="number" id="soil-moisture" min="20" max="60" step="0.1" value="40" />
+                </div>
+                <div class="flex-col">
+                    <label for="temperature">Temperature (°C):</label>
+                    <input type="number" id="temperature" min="15" max="35" step="0.1" value="25" />
+
+                    <label for="humidity" style="margin-top:1rem;">Humidity (%):</label>
+                    <input type="number" id="humidity" min="40" max="80" step="0.1" value="60" />
+
+                    <label for="ph" style="margin-top:1rem;">Soil pH:</label>
+                    <input type="number" id="ph" min="5" max="8" step="0.1" value="6.5" />
+
+                    <label for="rainfall" style="margin-top:1rem;">Annual Rainfall (mm):</label>
+                    <input type="number" id="rainfall" min="100" max="500" step="1" value="400" />
+
+                    <label for="nutrient-n" style="margin-top:1rem;">Nitrogen (kg/ha):</label>
+                    <input type="number" id="nutrient-n" min="50" max="150" step="1" value="100" />
+
+                    <label for="nutrient-p" style="margin-top:1rem;">Phosphorus (kg/ha):</label>
+                    <input type="number" id="nutrient-p" min="20" max="60" step="1" value="40" />
+
+                    <label for="nutrient-k" style="margin-top:1rem;">Potassium (kg/ha):</label>
+                    <input type="number" id="nutrient-k" min="50" max="200" step="1" value="80" />
+
+                    <label for="pest-level" style="margin-top:1rem;">Pest Level (0-4):</label>
+                    <input type="number" id="pest-level" min="0" max="4" step="1" value="1" />
+
+                    <label for="disease-level" style="margin-top:1rem;">Disease Level (0-4):</label>
+                    <input type="number" id="disease-level" min="0" max="4" step="1" value="1" />
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <button id="btn-predict-yield">Predict Crop Yield</button>
+            <div id="prediction-result" style="margin-top:1rem; display:none;">
+                <h3>Prediction Results</h3>
+                <div class="result-card" id="yield-card">
+                    <h3>Predicted Yield (kg/ha)</h3>
+                    <p id="predicted-yield">0</p>
+                </div>
+                <div class="result-card" id="production-card">
+                    <h3>Total Production (kg)</h3>
+                    <p id="total-production">0</p>
+                </div>
+                <div class="result-card" id="uncertainty-card">
+                    <h3>Prediction Uncertainty (%)</h3>
+                    <p id="prediction-uncertainty">0</p>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2025 AgriPredict AI. Powered by xAI Grok.</p>
+    </footer>
+
+    <script>
+        // Indian states and districts data (embedded from provided JSON)
+        const districtsData = {
+  "Andhra Pradesh": ["Anantapur", "Chittoor", "East Godavari", "Guntur", "Krishna", "Kurnool", "Prakasam", "Srikakulam", "Visakhapatnam", "Vizianagaram", "West Godavari", "YSR Kadapa"],
+  "Arunachal Pradesh": ["Tawang", "West Kameng", "East Kameng", "Papum Pare", "Kurung Kumey", "Kra Daadi", "Lower Subansiri", "Upper Subansiri", "West Siang", "East Siang", "Siang", "Upper Siang", "Lower Siang", "Lower Dibang Valley", "Dibang Valley", "Anjaw", "Lohit", "Namsai", "Changlang", "Tirap", "Longding"],
+  "Assam": ["Baksa", "Barpeta", "Biswanath", "Bongaigaon", "Cachar", "Charaideo", "Chirang", "Darrang", "Dhemaji", "Dhubri", "Dibrugarh", "Dima Hasao", "Goalpara", "Golaghat", "Hailakandi", "Jorhat", "Kamrup Metropolitan", "Kamrup", "Karbi Anglong", "Karimganj", "Kokrajhar", "Lakhimpur", "Majuli", "Morigaon", "Nagaon", "Nalbari", "Sivasagar", "Sonitpur", "South Salmara-Mankachar", "Tinsukia", "Udalguri", "West Karbi Anglong"],
+  "Bihar": ["Araria", "Arwal", "Aurangabad", "Banka", "Begusarai", "Bhagalpur", "Bhojpur", "Buxar", "Darbhanga", "East Champaran", "Gaya", "Gopalganj", "Jamui", "Jehanabad", "Kaimur", "Katihar", "Khagaria", "Kishanganj", "Lakhisarai", "Madhepura", "Madhubani", "Munger", "Muzaffarpur", "Nalanda", "Nawada", "Patna", "Purnia", "Rohtas", "Saharsa", "Samastipur", "Saran", "Sheikhpura", "Sheohar", "Sitamarhi", "Siwan", "Supaul", "Vaishali", "West Champaran"],
+  "Chhattisgarh": ["Balod", "Baloda Bazar", "Balrampur", "Bastar", "Bemetara", "Bijapur", "Bilaspur", "Dantewada", "Dhamtari", "Durg", "Gariaband", "Janjgir-Champa", "Jashpur", "Kabirdham", "Kanker", "Kondagaon", "Korba", "Korea", "Mahasamund", "Mungeli", "Narayanpur", "Raigarh", "Raipur", "Rajnandgaon", "Sukma", "Surajpur", "Surguja"],
+  "Goa": ["North Goa", "South Goa"],
+  "Gujarat": ["Ahmedabad", "Amreli", "Anand", "Aravalli", "Banaskantha", "Bharuch", "Bhavnagar", "Botad", "Chhota Udaipur", "Dahod", "Dang", "Devbhoomi Dwarka", "Gandhinagar", "Gir Somnath", "Jamnagar", "Junagadh", "Kheda", "Kutch", "Mahisagar", "Mehsana", "Morbi", "Narmada", "Navsari", "Panchmahal", "Patan", "Porbandar", "Rajkot", "Sabarkantha", "Surat", "Surendranagar", "Tapi", "Vadodara", "Valsad"],
+  "Haryana": ["Ambala", "Bhiwani", "Charkhi Dadri", "Faridabad", "Fatehabad", "Gurgaon", "Hisar", "Jhajjar", "Jind", "Kaithal", "Karnal", "Kurukshetra", "Mahendragarh", "Nuh", "Palwal", "Panchkula", "Panipat", "Rewari", "Rohtak", "Sirsa", "Sonipat", "Yamunanagar"],
+  "Himachal Pradesh": ["Bilaspur", "Chamba", "Hamirpur", "Kangra", "Kinnaur", "Kullu", "Lahaul and Spiti", "Mandi", "Shimla", "Sirmaur", "Solan", "Una"],
+  "Jharkhand": ["Bokaro", "Chatra", "Deoghar", "Dhanbad", "Dumka", "East Singhbhum", "Garhwa", "Giridih", "Godda", "Gumla", "Hazaribagh", "Jamtara", "Khunti", "Koderma", "Latehar", "Lohardaga", "Pakur", "Palamu", "Ramgarh", "Ranchi", "Sahibganj", "Saraikela Kharsawan", "Simdega", "West Singhbhum"],
+  "Karnataka": ["Bagalkot", "Ballari", "Belagavi", "Bengaluru Rural", "Bengaluru Urban", "Bidar", "Chamarajanagar", "Chikballapur", "Chikkamagaluru", "Chitradurga", "Dakshina Kannada", "Davangere", "Dharwad", "Gadag", "Hassan", "Haveri", "Kalaburagi", "Kodagu", "Kolar", "Koppal", "Mandya", "Mysuru", "Raichur", "Ramanagara", "Shivamogga", "Tumakuru", "Udupi", "Uttara Kannada", "Vijayapura", "Yadgir"],
+  "Kerala": ["Alappuzha", "Ernakulam", "Idukki", "Kannur", "Kasaragod", "Kollam", "Kottayam", "Kozhikode", "Malappuram", "Palakkad", "Pathanamthitta", "Thiruvananthapuram", "Thrissur", "Wayanad"],
+  "Madhya Pradesh": ["Agar Malwa", "Alirajpur", "Anuppur", "Ashoknagar", "Balaghat", "Barwani", "Betul", "Bhind", "Bhopal", "Burhanpur", "Chhatarpur", "Chhindwara", "Damoh", "Datia", "Dewas", "Dhar", "Dindori", "Guna", "Gwalior", "Harda", "Hoshangabad", "Indore", "Jabalpur", "Jhabua", "Katni", "Khandwa", "Khargone", "Mandla", "Mandsaur", "Morena", "Narsinghpur", "Neemuch", "Panna", "Raisen", "Rajgarh", "Ratlam", "Rewa", "Sagar", "Satna", "Sehore", "Seoni", "Shahdol", "Shajapur", "Sheopur", "Shivpuri", "Sidhi", "Singrauli", "Tikamgarh", "Ujjain", "Umaria", "Vidisha"],
+  "Maharashtra": ["Ahmednagar", "Akola", "Amravati", "Aurangabad", "Beed", "Bhandara", "Buldhana", "Chandrapur", "Dhule", "Gadchiroli", "Gondia", "Hingoli", "Jalgaon", "Jalna", "Kolhapur", "Latur", "Mumbai City", "Mumbai Suburban", "Nagpur", "Nanded", "Nandurbar", "Nashik", "Osmanabad", "Palghar", "Parbhani", "Pune", "Raigad", "Ratnagiri", "Sangli", "Satara", "Sindhudurg", "Solapur", "Thane", "Wardha", "Washim", "Yavatmal"],
+  "Manipur": ["Bishnupur", "Churachandpur", "Chandel", "Imphal East", "Imphal West", "Senapati", "Tamenglong", "Thoubal", "Ukhrul"],
+  "Meghalaya": ["East Garo Hills", "East Jaintia Hills", "East Khasi Hills", "North Garo Hills", "Ri Bhoi", "South Garo Hills", "South West Garo Hills", "South West Khasi Hills", "West Garo Hills", "West Jaintia Hills", "West Khasi Hills"],
+  "Mizoram": ["Aizawl", "Champhai", "Kolasib", "Lawngtlai", "Lunglei", "Mamit", "Saiha", "Serchhip"],
+  "Nagaland": ["Dimapur", "Kiphire", "Kohima", "Longleng", "Mokokchung", "Mon", "Peren", "Phek", "Tuensang", "Wokha", "Zunheboto"],
+  "Odisha": ["Angul", "Balangir", "Balasore", "Bargarh", "Bhadrak", "Boudh", "Cuttack", "Deogarh", "Dhenkanal", "Gajapati", "Ganjam", "Jagatsinghpur", "Jajpur", "Jharsuguda", "Kalahandi", "Kandhamal", "Kendrapara", "Kendujhar", "Khordha", "Koraput", "Malkangiri", "Mayurbhanj", "Nabarangpur", "Nayagarh", "Nuapada", "Puri", "Rayagada", "Sambalpur", "Sonepur", "Sundargarh"],
+  "Punjab": ["Amritsar", "Barnala", "Bathinda", "Faridkot", "Fatehgarh Sahib", "Fazilka", "Ferozepur", "Gurdaspur", "Hoshiarpur", "Jalandhar", "Kapurthala", "Ludhiana", "Mansa", "Moga", "Muktsar", "Pathankot", "Patiala", "Rupnagar", "Sahibzada Ajit Singh Nagar", "Sangrur", "Tarn Taran"],
+  "Rajasthan": ["Ajmer", "Alwar", "Banswara", "Baran", "Barmer", "Bharatpur", "Bhilwara", "Bikaner", "Bundi", "Chittorgarh", "Churu", "Dausa", "Dholpur", "Dungarpur", "Hanumangarh", "Jaipur", "Jaisalmer", "Jalore", "Jhalawar", "Jhunjhunu", "Jodhpur", "Karauli", "Kota", "Nagaur", "Pali", "Pratapgarh", "Rajsamand", "Sawai Madhopur", "Sikar", "Sirohi", "Tonk", "Udaipur"],
+  "Sikkim": ["East Sikkim", "North Sikkim", "South Sikkim", "West Sikkim"],
+  "Tamil Nadu": ["Ariyalur", "Chengalpattu", "Chennai", "Coimbatore", "Cuddalore", "Dharmapuri", "Dindigul", "Erode", "Kallakurichi", "Kancheepuram", "Karur", "Krishnagiri", "Madurai", "Nagapattinam", "Namakkal", "Nilgiris", "Perambalur", "Pudukkottai", "Ramanathapuram", "Ranipet", "Salem", "Sivaganga", "Tenkasi", "Thanjavur", "Theni", "Thoothukudi", "Tiruchirappalli", "Tirunelveli", "Tirupathur", "Tiruppur", "Tiruvallur", "Tiruvannamalai", "Tiruvarur", "Vellore", "Viluppuram", "Virudhunagar"],
+  "Telangana": ["Adilabad", "Bhadradri Kothagudem", "Hyderabad", "Jagtial", "Jangaon", "Jayashankar Bhupalpally", "Jogulamba Gadwal", "Kamareddy", "Karimnagar", "Khammam", "Komaram Bheem Asifabad", "Mahabubabad", "Mahbubnagar", "Mancherial", "Medak", "Medchal", "Nagarkurnool", "Nalgonda", "Nirmal", "Nizamabad", "Peddapalli", "Rajanna Sircilla", "Rangareddy", "Sangareddy", "Siddipet", "Suryapet", "Vikarabad", "Wanaparthy", "Warangal Rural", "Warangal Urban", "Yadadri Bhuvanagiri"],
+  "Tripura": ["Dhalai", "Gomati", "Khowai", "North Tripura", "Sepahijala", "South Tripura", "Unakoti", "West Tripura"],
+  "Uttar Pradesh": ["Agra", "Aligarh", "Ambedkar Nagar", "Amethi", "Amroha", "Auraiya", "Azamgarh", "Baghpat", "Bahraich", "Ballia", "Balrampur", "Banda", "Barabanki", "Bareilly", "Basti", "Bhadohi", "Bijnor", "Bulandshahr", "Chandauli", "Chitrakoot", "Deoria", "Etah", "Etawah", "Faizabad", "Farrukhabad", "Fatehpur", "Firozabad", "Gautam Buddha Nagar", "Ghaziabad", "Ghazipur", "Gonda", "Gorakhpur", "Hamirpur", "Hapur", "Hardoi", "Hathras", "Jalaun", "Jaunpur", "Jhansi", "Kannauj", "Kanpur Dehat", "Kanpur Nagar", "Kasganj", "Kaushambi", "Kushinagar", "Lakhimpur Kheri", "Lalitpur", "Lucknow", "Maharajganj", "Mahoba", "Mainpuri", "Mathura", "Mau", "Meerut", "Mirzapur", "Moradabad", "Muzaffarnagar", "Pilibhit", "Pratapgarh", "Raebareli", "Rampur", "Saharanpur", "Sambhal", "Sant Kabir Nagar", "Shahjahanpur", "Shamli", "Shravasti", "Siddharthnagar", "Sitapur", "Sonbhadra", "Sultanpur", "Unnao", "Varanasi"],
+  "Uttarakhand": ["Almora", "Bageshwar", "Chamoli", "Champawat", "Dehradun", "Haridwar", "Nainital", "Pauri Garhwal", "Pithoragarh", "Rudraprayag", "Tehri Garhwal", "Udham Singh Nagar", "Uttarkashi"],
+  "West Bengal": ["Alipurduar", "Bankura", "Birbhum", "Cooch Behar", "Dakshin Dinajpur", "Darjeeling", "Hooghly", "Howrah", "Jalpaiguri", "Jhargram", "Kalimpong", "Kolkata", "Malda", "Murshidabad", "Nadia", "North 24 Parganas", "Paschim Bardhaman", "Paschim Medinipur", "Purba Bardhaman", "Purba Medinipur", "Purulia", "South 24 Parganas", "Uttar Dinajpur"],
+  "Andaman and Nicobar Islands": ["Nicobar", "North and Middle Andaman", "South Andaman"],
+  "Chandigarh": ["Chandigarh"],
+  "Dadra and Nagar Haveli and Daman and Diu": ["Dadra and Nagar Haveli", "Daman", "Diu"],
+  "Delhi": ["Central Delhi", "East Delhi", "New Delhi", "North Delhi", "North East Delhi", "North West Delhi", "Shahdara", "South Delhi", "South East Delhi", "South West Delhi", "West Delhi"],
+  "Jammu and Kashmir": ["Anantnag", "Bandipora", "Baramulla", "Budgam", "Doda", "Ganderbal", "Jammu", "Kathua", "Kishtwar", "Kulgam", "Kupwara", "Poonch", "Pulwama", "Rajouri", "Ramban", "Reasi", "Samba", "Shopian", "Srinagar", "Udhampur"],
+  "Ladakh": ["Kargil", "Leh"],
+  "Lakshadweep": ["Agatti", "Amini", "Andrott", "Bitra", "Chetlat", "Kavaratti", "Kadmat", "Kalpeni", "Minicoy"],
+  "Puducherry": ["Karaikal", "Mahe", "Puducherry", "Yanam"]
+        };
+
+        // API base URL (adjust as needed)
+        const API_BASE = 'http://localhost:8001/api';  // Changed from 8000 to 8001
+
+        // Initialize state-district linkage
+        document.addEventListener('DOMContentLoaded', function() {
+            const stateSelect = document.getElementById('state-select');
+            const districtSelect = document.getElementById('district-select');
+
+            // Initial load
+            updateDistricts();
+
+            // Listen for state change
+            stateSelect.addEventListener('change', updateDistricts);
+
+            function updateDistricts() {
+                const selectedState = stateSelect.value;
+                districtSelect.innerHTML = '';
+                if (districtsData[selectedState]) {
+                    districtsData[selectedState].forEach(district => {
+                        const option = document.createElement('option');
+                        option.value = district;
+                        option.textContent = district;
+                        districtSelect.appendChild(option);
+                    });
+                }
+            }
+        });
+
+        // Get Coordinates
+        document.getElementById('btn-get-coords').addEventListener('click', async () => {
+            const location = document.getElementById('location-input').value;
+            if (!location) {
+                alert('Please enter a location.');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/get-coordinates`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ location })
+                });
+                if (!response.ok) {
+                    throw new Error(await response.text());
+                }
+                const data = await response.json();
+                document.getElementById('latitude').value = data.latitude;
+                document.getElementById('longitude').value = data.longitude;
+                document.getElementById('map-snapshot').textContent = `Map for Lat: ${data.latitude}, Lon: ${data.longitude}`;
+            } catch (error) {
+                alert('Error fetching coordinates: ' + error.message);
+            }
+        });
+
+        // Fetch Weather
+        document.getElementById('btn-fetch-weather').addEventListener('click', async () => {
+            const lat = document.getElementById('latitude').value;
+            const lon = document.getElementById('longitude').value;
+            const apiKey = document.getElementById('weather-api-key').value;
+            if (!lat || !lon || !apiKey) {
+                alert('Please enter latitude, longitude, and API key.');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/fetch-weather`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ latitude: parseFloat(lat), longitude: parseFloat(lon), api_key: apiKey })
+                });
+                if (!response.ok) {
+                    throw new Error(await response.text());
+                }
+                const data = await response.json();
+                document.getElementById('weather-data').innerHTML = `
+                    Temperature: ${data.temperature_celsius.toFixed(1)}°C<br>
+                    Humidity: ${data.humidity_percent}%<br>
+                    Rainfall: ${data.rainfall_mm ? data.rainfall_mm.toFixed(1) + ' mm' : 'N/A'}
+                `;
+                // Auto-fill temperature, humidity, rainfall
+                document.getElementById('temperature').value = data.temperature_celsius.toFixed(1);
+                document.getElementById('humidity').value = data.humidity_percent;
+                document.getElementById('rainfall').value = data.rainfall_mm || 400;
+            } catch (error) {
+                alert('Error fetching weather: ' + error.message);
+            }
+        });
+
+        // Fetch Soil
+        document.getElementById('btn-fetch-soil').addEventListener('click', async () => {
+            const lat = document.getElementById('latitude').value;
+            const lon = document.getElementById('longitude').value;
+            if (!lat || !lon) {
+                alert('Please enter latitude and longitude.');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/fetch-soil`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ latitude: parseFloat(lat), longitude: parseFloat(lon) })
+                });
+                if (!response.ok) {
+                    throw new Error(await response.text());
+                }
+                const data = await response.json();
+                document.getElementById('soil-data').innerHTML = `
+                    pH: ${data.ph ? data.ph.toFixed(1) : 'N/A'}<br>
+                    Clay: ${data.clay_percent ? data.clay_percent.toFixed(1) + '%' : 'N/A'}<br>
+                    Soil Type: ${data.soil_type || 'N/A'}<br>
+                    Nitrogen: ${data.nitrogen_kg_per_ha ? data.nitrogen_kg_per_ha.toFixed(1) + ' kg/ha' : 'N/A'}
+                `;
+                // Auto-fill pH and nutrient_n
+                if (data.ph) document.getElementById('ph').value = data.ph.toFixed(1);
+                if (data.nitrogen_kg_per_ha) document.getElementById('nutrient-n').value = Math.min(Math.max(data.nitrogen_kg_per_ha, 50), 150);
+            } catch (error) {
+                alert('Error fetching soil: ' + error.message);
+            }
+        });
+
+        // Predict Yield
+        document.getElementById('btn-predict-yield').addEventListener('click', async () => {
+            // Collect form data
+            const formData = {
+                state: document.getElementById('state-select').value,
+                district: document.getElementById('district-select').value,
+                crop_year: parseInt(document.getElementById('crop-year').value),
+                season: document.getElementById('season-select').value,
+                crop: document.getElementById('crop-select').value,
+                area: parseFloat(document.getElementById('area-input').value),
+                soil_moisture: parseFloat(document.getElementById('soil-moisture').value),
+                temperature: parseFloat(document.getElementById('temperature').value),
+                humidity: parseFloat(document.getElementById('humidity').value),
+                ph: parseFloat(document.getElementById('ph').value),
+                rainfall: parseFloat(document.getElementById('rainfall').value),
+                nutrient_n: parseFloat(document.getElementById('nutrient-n').value),
+                nutrient_p: parseFloat(document.getElementById('nutrient-p').value),
+                nutrient_k: parseFloat(document.getElementById('nutrient-k').value),
+                pest_level: parseInt(document.getElementById('pest-level').value),
+                disease_level: parseInt(document.getElementById('disease-level').value)
+            };
+
+            // Validation
+            if (!formData.state || !formData.district) {
+                alert('Please select state and district.');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/predict-yield`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+                if (!response.ok) {
+                    throw new Error(await response.text());
+                }
+                const data = await response.json();
+                document.getElementById('predicted-yield').textContent = data.predicted_yield_kg_per_ha;
+                document.getElementById('total-production').textContent = data.total_production_kg;
+                document.getElementById('prediction-uncertainty').textContent = data.prediction_uncertainty_percent;
+                document.getElementById('prediction-result').style.display = 'block';
+            } catch (error) {
+                alert('Error predicting yield: ' + error.message);
+            }
+        });
+    </script>
+</body>
+</html>

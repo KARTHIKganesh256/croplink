@@ -1,0 +1,1999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriPredict AI - Crop Yield Analytics & Prediction Platform</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            /* Palette Light Mode */
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --bg-glass: rgba(255, 255, 255, 0.7);
+            --bg-glass-hover: rgba(255, 255, 255, 0.85);
+            --border-color: rgba(226, 232, 240, 0.8);
+            
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            
+            --primary: #10b981; /* Emerald */
+            --primary-hover: #059669;
+            --primary-light: rgba(16, 185, 129, 0.1);
+            --secondary: #3b82f6; /* Blue */
+            --accent: #f59e0b; /* Amber */
+            --danger: #ef4444; /* Red */
+            
+            --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.06);
+            --font-display: 'Outfit', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            
+            --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .dark-mode {
+            /* Palette Dark Mode */
+            --bg-primary: #0b0f19;
+            --bg-secondary: #111827;
+            --bg-glass: rgba(17, 24, 39, 0.7);
+            --bg-glass-hover: rgba(17, 24, 39, 0.85);
+            --border-color: rgba(37, 99, 235, 0.1);
+            
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            
+            --primary: #34d399;
+            --primary-hover: #10b981;
+            --primary-light: rgba(52, 211, 153, 0.15);
+            --secondary: #60a5fa;
+            --accent: #fbbf24;
+            --danger: #f87171;
+            
+            --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            transition: var(--transition-smooth);
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.05) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.05) 0px, transparent 50%);
+        }
+
+        /* --- Custom Scrollbar --- */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--text-muted);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+
+        /* --- Header / Navigation --- */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 2rem;
+            box-shadow: var(--glass-shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition-smooth);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo i {
+            font-size: 2rem;
+            color: var(--primary);
+            text-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+        }
+
+        .logo h1 {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .btn-icon {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition-smooth);
+        }
+
+        .btn-icon:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* --- Tabs --- */
+        .tabs-container {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem auto 1rem;
+            max-width: 600px;
+            padding: 0.25rem;
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            box-shadow: var(--glass-shadow);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 1rem;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: var(--transition-smooth);
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .tab-btn:not(.active):hover {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        /* --- Main Layout --- */
+        main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Stats Row --- */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition-smooth);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+        }
+
+        .stat-icon {
+            width: 55px;
+            height: 55px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .stat-icon.green { background: rgba(16, 185, 129, 0.1); color: var(--primary); }
+        .stat-icon.blue { background: rgba(59, 130, 246, 0.1); color: var(--secondary); }
+        .stat-icon.orange { background: rgba(245, 158, 11, 0.1); color: var(--accent); }
+        .stat-icon.red { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+
+        .stat-info h3 {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-info p {
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* --- Cards --- */
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 2rem;
+            transition: var(--transition-smooth);
+        }
+
+        .card-title {
+            font-family: var(--font-display);
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.75rem;
+        }
+
+        .card-title i {
+            color: var(--primary);
+        }
+
+        /* --- Image Showcase (Analytics) --- */
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .image-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .image-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition-smooth);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .image-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .image-header {
+            padding: 1rem 1.5rem;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .image-header h4 {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .image-container {
+            position: relative;
+            background: #ffffff;
+            aspect-ratio: 4/3;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transition: var(--transition-smooth);
+        }
+
+        .image-card:hover .image-container img {
+            transform: scale(1.03);
+        }
+
+        .image-desc {
+            padding: 1rem 1.5rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+            flex-grow: 1;
+        }
+
+        /* --- Image Zoom Modal --- */
+        .zoom-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .zoom-modal img {
+            max-width: 90%;
+            max-height: 85%;
+            object-fit: contain;
+            border-radius: 12px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            animation: zoomIn 0.3s ease;
+        }
+
+        @keyframes zoomIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .close-zoom {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 2.5rem;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .close-zoom:hover {
+            color: var(--primary);
+            transform: scale(1.1);
+        }
+
+        /* --- Model Showcase Carousel / Tab Container --- */
+        .model-tab-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem;
+        }
+
+        .model-tab-btn {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: var(--transition-smooth);
+        }
+
+        .model-tab-btn.active {
+            background: var(--secondary);
+            color: white;
+            border-color: var(--secondary);
+        }
+
+        .model-tab-btn:hover:not(.active) {
+            border-color: var(--secondary);
+            color: var(--secondary);
+        }
+
+        /* --- Predictor Workspace Grid --- */
+        .predictor-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 1024px) {
+            .predictor-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* --- Input Fields Styles --- */
+        .input-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .input-group label i {
+            color: var(--primary);
+            margin-right: 0.25rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        input[type="text"], input[type="number"], select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            transition: var(--transition-smooth);
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+            background: var(--bg-secondary);
+        }
+
+        /* Toggle Switches */
+        .mode-toggle-bar {
+            display: flex;
+            background: var(--bg-primary);
+            padding: 0.35rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .mode-toggle-btn {
+            flex: 1;
+            padding: 0.6rem;
+            border: none;
+            background: transparent;
+            font-family: var(--font-display);
+            font-weight: 600;
+            color: var(--text-muted);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .mode-toggle-btn.active {
+            background: var(--bg-secondary);
+            color: var(--primary);
+            box-shadow: var(--card-shadow);
+        }
+
+        /* --- Buttons --- */
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.85rem 1.5rem;
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 1rem;
+            border-radius: 12px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+            transition: var(--transition-smooth);
+            width: 100%;
+        }
+
+        .btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            box-shadow: none;
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary-light);
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: none;
+        }
+
+        /* --- Geo API Card --- */
+        .telemetry-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .telemetry-status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+        }
+
+        .telemetry-label {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .telemetry-value {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .telemetry-value.live {
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.9); opacity: 0.6; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(0.9); opacity: 0.6; }
+        }
+
+        /* --- Output Dashboard (Right Panel) --- */
+        .output-card {
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+            border: 2px solid var(--border-color);
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: var(--glass-shadow);
+            position: sticky;
+            top: 100px;
+            height: fit-content;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        /* Yield Gauge */
+        .gauge-wrapper {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 1rem 0 2rem;
+        }
+
+        .gauge-svg {
+            transform: rotate(-90deg);
+            width: 100%;
+            height: 100%;
+        }
+
+        .gauge-bg {
+            fill: none;
+            stroke: var(--border-color);
+            stroke-width: 12;
+        }
+
+        .gauge-fill {
+            fill: none;
+            stroke: var(--primary);
+            stroke-width: 12;
+            stroke-dasharray: 565;
+            stroke-dashoffset: 565;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .gauge-text {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .gauge-value {
+            font-family: var(--font-display);
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        .gauge-unit {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .result-details {
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-top: 1px solid var(--border-color);
+            padding-top: 1.5rem;
+        }
+
+        .result-detail-item {
+            text-align: left;
+            padding: 0.75rem 1rem;
+            background: var(--bg-primary);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .result-detail-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 0.25rem;
+            font-weight: 500;
+        }
+
+        .result-detail-value {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* AI Recommendations Box */
+        .advice-box {
+            width: 100%;
+            text-align: left;
+        }
+
+        .advice-header {
+            font-family: var(--font-display);
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .advice-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            max-height: 250px;
+            overflow-y: auto;
+            padding-right: 0.25rem;
+        }
+
+        .advice-card {
+            padding: 0.85rem 1rem;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            display: flex;
+            gap: 0.75rem;
+            border: 1px solid transparent;
+        }
+
+        .advice-card.warning {
+            background: rgba(245, 158, 11, 0.08);
+            border-color: rgba(245, 158, 11, 0.2);
+            color: #d97706;
+        }
+        .advice-card.warning i { color: var(--accent); }
+
+        .advice-card.danger {
+            background: rgba(239, 68, 68, 0.08);
+            border-color: rgba(239, 68, 68, 0.2);
+            color: #dc2626;
+        }
+        .advice-card.danger i { color: var(--danger); }
+
+        .advice-card.success {
+            background: rgba(16, 185, 129, 0.08);
+            border-color: rgba(16, 185, 129, 0.2);
+            color: #059669;
+        }
+        .advice-card.success i { color: var(--primary); }
+
+        /* --- Tables --- */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            text-align: left;
+        }
+
+        table th {
+            background: var(--bg-primary);
+            color: var(--text-secondary);
+            font-family: var(--font-display);
+            font-weight: 600;
+            padding: 1rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        table tbody tr:hover {
+            background: var(--primary-light);
+        }
+
+        /* --- Footer --- */
+        footer {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+            margin-top: 4rem;
+            background: var(--bg-glass);
+            backdrop-filter: blur(10px);
+        }
+
+        footer p {
+            font-size: 0.9rem;
+        }
+
+        /* Placeholder image */
+        .img-fallback {
+            background: var(--bg-primary);
+            color: var(--text-muted);
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            text-align: center;
+            gap: 0.75rem;
+        }
+
+        .img-fallback i {
+            font-size: 2.5rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header>
+        <div class="logo">
+            <i class="fa-solid fa-wheat-awn"></i>
+            <h1>AgriPredict AI</h1>
+        </div>
+        <div class="nav-controls">
+            <span id="date-widget" style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500;"></span>
+            <button id="theme-toggle" class="btn-icon" title="Toggle Dark/Light Mode">
+                <i class="fa-solid fa-moon"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        
+        <!-- Tab Bar Selection -->
+        <div class="tabs-container">
+            <button class="tab-btn active" onclick="switchTab('analytics')">
+                <i class="fa-solid fa-chart-line"></i> Analytics & Insights
+            </button>
+            <button class="tab-btn" onclick="switchTab('predict')">
+                <i class="fa-solid fa-seedling"></i> AI Yield Predictor
+            </button>
+        </div>
+
+        <!-- TAB 1: ANALYTICS & INSIGHTS -->
+        <div id="tab-analytics" class="tab-content active">
+            
+            <!-- Statistics Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon green">
+                        <i class="fa-solid fa-database"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Dataset Size</h3>
+                        <p id="stat-records">28,242 Rows</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon blue">
+                        <i class="fa-solid fa-chart-bar"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Avg Yield</h3>
+                        <p id="stat-yield">77,053 hg/ha</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon orange">
+                        <i class="fa-solid fa-temperature-half"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Temp Limits</h3>
+                        <p id="stat-temp">1.3 - 30.7 °C</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon red">
+                        <i class="fa-solid fa-cloud-rain"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Rainfall Range</h3>
+                        <p id="stat-rain">51 - 3,240 mm</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Visualization Plots Grid -->
+            <div class="card">
+                <div class="card-title">
+                    <i class="fa-solid fa-images"></i> Historical Yield Visual Analytics
+                </div>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem; font-size: 0.95rem;">
+                    These visual distributions showcase the core data parameters extracted from the FAO database, analyzed dynamically to construct our crop yield forecasts. Click on any plot to open full screen.
+                </p>
+                
+                <div class="image-grid">
+                    <!-- Correlation Heatmap -->
+                    <div class="image-card">
+                        <div class="image-header">
+                            <h4>Feature Correlation Heatmap</h4>
+                            <button class="btn-icon" onclick="zoomImage('/static/correlation_heatmap.png')">
+                                <i class="fa-solid fa-expand"></i>
+                            </button>
+                        </div>
+                        <div class="image-container">
+                            <img src="/static/correlation_heatmap.png" alt="Correlation Heatmap" onerror="showImgFallback(this)">
+                        </div>
+                        <div class="image-desc">
+                            Shows statistical relationships between features. Strong correlation is observed between pesticide usage levels and yield, and negative associations with extreme temperatures.
+                        </div>
+                    </div>
+                    
+                    <!-- Geospatial Yield Plot -->
+                    <div class="image-card">
+                        <div class="image-header">
+                            <h4>Geospatial Crop Yields</h4>
+                            <button class="btn-icon" onclick="zoomImage('/static/geospatial_plot.png')">
+                                <i class="fa-solid fa-expand"></i>
+                            </button>
+                        </div>
+                        <div class="image-container">
+                            <img src="/static/geospatial_plot.png" alt="Geospatial Plot" onerror="showImgFallback(this)">
+                        </div>
+                        <div class="image-desc">
+                            Geographical distribution map of yields across FAO reporting zones, revealing regional efficiency discrepancies.
+                        </div>
+                    </div>
+                    
+                    <!-- Area Histograms -->
+                    <div class="image-card">
+                        <div class="image-header">
+                            <h4>Yield Distributions by Area</h4>
+                            <button class="btn-icon" onclick="zoomImage('/static/area_histograms.png')">
+                                <i class="fa-solid fa-expand"></i>
+                            </button>
+                        </div>
+                        <div class="image-container">
+                            <img src="/static/area_histograms.png" alt="Area Histograms" onerror="showImgFallback(this)">
+                        </div>
+                        <div class="image-desc">
+                            Frequency histograms showing yield spread aggregated across high-producing geographical countries.
+                        </div>
+                    </div>
+                    
+                    <!-- Best Areas -->
+                    <div class="image-card">
+                        <div class="image-header">
+                            <h4>Top Performing Country/Crop Duos</h4>
+                            <button class="btn-icon" onclick="zoomImage('/static/best_areas.png')">
+                                <i class="fa-solid fa-expand"></i>
+                            </button>
+                        </div>
+                        <div class="image-container">
+                            <img src="/static/best_areas.png" alt="Best Areas by Crop" onerror="showImgFallback(this)">
+                        </div>
+                        <div class="image-desc">
+                            Showcases the highest yielding country-crop relationships, mapping areas of peak agronomic optimization.
+                        </div>
+                    </div>
+
+                    <!-- General Histograms -->
+                    <div class="image-card">
+                        <div class="image-header">
+                            <h4>Feature Distribution Histograms</h4>
+                            <button class="btn-icon" onclick="zoomImage('/static/histograms.png')">
+                                <i class="fa-solid fa-expand"></i>
+                            </button>
+                        </div>
+                        <div class="image-container">
+                            <img src="/static/histograms.png" alt="Histograms" onerror="showImgFallback(this)">
+                        </div>
+                        <div class="image-desc">
+                            Histogram spread representing the underlying distribution of rainfall, pesticides, temperatures, and base crop yield.
+                        </div>
+                    </div>
+
+                    <!-- Pairplots -->
+                    <div class="image-card">
+                        <div class="image-header">
+                            <h4>Multidimensional Relationships</h4>
+                            <button class="btn-icon" onclick="zoomImage('/static/pairplot.png')">
+                                <i class="fa-solid fa-expand"></i>
+                            </button>
+                        </div>
+                        <div class="image-container">
+                            <img src="/static/pairplot.png" alt="Pairplot" onerror="showImgFallback(this)">
+                        </div>
+                        <div class="image-desc">
+                            Scatter matrix of yield dependencies showing multi-variable trends and cluster groupings of features.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Model Evaluation showcase -->
+            <div class="card">
+                <div class="card-title">
+                    <i class="fa-solid fa-brain"></i> Machine Learning Model Evaluations
+                </div>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem; font-size: 0.95rem;">
+                    Compare model test results below. We trained several regression models, mapping actual vs predicted crop yields to select our primary forecasting algorithm.
+                </p>
+
+                <!-- Model selection tabs -->
+                <div class="model-tab-container" id="model-tabs">
+                    <button class="model-tab-btn active" onclick="switchModelPlot('Bagging Regressor', this)">Bagging Regressor</button>
+                    <button class="model-tab-btn" onclick="switchModelPlot('Random Forest', this)">Random Forest</button>
+                    <button class="model-tab-btn" onclick="switchModelPlot('XGBoost', this)">XGBoost</button>
+                    <button class="model-tab-btn" onclick="switchModelPlot('Gradient Boost', this)">Gradient Boost</button>
+                    <button class="model-tab-btn" onclick="switchModelPlot('KNN', this)">KNN</button>
+                    <button class="model-tab-btn" onclick="switchModelPlot('Decision Tree', this)">Decision Tree</button>
+                    <button class="model-tab-btn" onclick="switchModelPlot('Linear Regression', this)">Linear Regression</button>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 2.5rem; align-items: center;">
+                    <!-- Active Model Plot Image -->
+                    <div class="image-card" style="margin: 0; background: white;">
+                        <div class="image-header">
+                            <h4 id="active-model-title">Bagging Regressor: Actual vs Predicted</h4>
+                            <button class="btn-icon" id="btn-zoom-model" onclick="zoomActiveModel()">
+                                <i class="fa-solid fa-expand"></i>
+                            </button>
+                        </div>
+                        <div class="image-container" style="aspect-ratio: 4/3; max-height: 400px;">
+                            <img id="active-model-img" src="/static/Bagging Regressor_actual_vs_pred.png" alt="Model Actual vs Pred" onerror="showImgFallback(this)">
+                        </div>
+                    </div>
+
+                    <!-- Metrics Table -->
+                    <div>
+                        <h4 style="font-family: var(--font-display); font-size: 1.15rem; font-weight: 700; margin-bottom: 1rem;">Comparison Metrics Table</h4>
+                        <div class="table-responsive">
+                            <table id="metrics-table">
+                                <thead>
+                                    <tr>
+                                        <th>Model</th>
+                                        <th>Accuracy (%)</th>
+                                        <th>R2 Score</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Fallback metrics -->
+                                    <tr>
+                                        <td>Bagging Regressor</td>
+                                        <td>97.10%</td>
+                                        <td>0.97</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Random Forest</td>
+                                        <td>96.84%</td>
+                                        <td>0.97</td>
+                                    </tr>
+                                    <tr>
+                                        <td>XGBoost</td>
+                                        <td>96.22%</td>
+                                        <td>0.96</td>
+                                    </tr>
+                                    <tr>
+                                        <td>KNN</td>
+                                        <td>84.62%</td>
+                                        <td>0.85</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Decision Tree</td>
+                                        <td>95.53%</td>
+                                        <td>0.96</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Linear Regression</td>
+                                        <td>74.22%</td>
+                                        <td>0.74</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div style="margin-top: 1rem; font-size: 0.8rem; color: var(--text-muted); line-height: 1.4;">
+                            <i class="fa-solid fa-circle-info"></i> Bagging Regressor demonstrates the highest performance with <b>97.1%</b> test accuracy, and has been loaded as the primary prediction engine.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: AI YIELD PREDICTOR -->
+        <div id="tab-predict" class="tab-content">
+            <div class="predictor-grid">
+                
+                <!-- Left Panel: Inputs -->
+                <div>
+                    <!-- Geo-Telemetry Live Fetch Card -->
+                    <div class="card" style="padding: 1.5rem;">
+                        <div class="card-title" style="font-size: 1.25rem; margin-bottom: 1rem; padding-bottom: 0.5rem;">
+                            <i class="fa-solid fa-satellite-dish"></i> Live Geo-Telemetry Retrieval
+                        </div>
+                        <p style="color: var(--text-secondary); margin-bottom: 1rem; font-size: 0.85rem;">
+                            Type any farm address or city. AgriPredict connects to GPS maps, live satellite weather telemetry, and the ISRIC Soil Database to retrieve soil moisture, temperature, rainfall, pH, and nitrogen composition.
+                        </p>
+                        
+                        <div class="input-group">
+                            <div style="display: flex; gap: 0.75rem;">
+                                <input type="text" id="location-input" placeholder="e.g. Hyderabad, Telangana, India" style="flex-grow: 1;">
+                                <button class="btn" id="btn-fetch-telemetry" style="width: auto; padding: 0.75rem 1.25rem;" onclick="fetchLiveTelemetry()">
+                                    <i class="fa-solid fa-location-crosshairs"></i> Fetch Live Data
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Live Telemetry Status Details -->
+                        <div class="telemetry-card" id="telemetry-status-box" style="display: none;">
+                            <div class="telemetry-status-item">
+                                <span class="telemetry-label">Status</span>
+                                <span class="telemetry-value live"><span class="live-dot"></span> Live Telemetry Connected</span>
+                            </div>
+                            <div class="telemetry-status-item">
+                                <span class="telemetry-label">Resolved Address</span>
+                                <span class="telemetry-value" id="telemetry-address">-</span>
+                            </div>
+                            <div class="telemetry-status-item">
+                                <span class="telemetry-label">Coordinates</span>
+                                <span class="telemetry-value" id="telemetry-coords">-</span>
+                            </div>
+                            <div class="telemetry-status-item">
+                                <span class="telemetry-label">Weather Output</span>
+                                <span class="telemetry-value" id="telemetry-weather">-</span>
+                            </div>
+                            <div class="telemetry-status-item">
+                                <span class="telemetry-label">Soil Structure</span>
+                                <span class="telemetry-value" id="telemetry-soil">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main Form Input Card -->
+                    <div class="card">
+                        <!-- Mode toggle -->
+                        <div class="mode-toggle-bar">
+                            <button class="mode-toggle-btn active" id="mode-global-btn" onclick="togglePredictMode('global')">
+                                <i class="fa-solid fa-globe"></i> Global Model (FAO)
+                            </button>
+                            <button class="mode-toggle-btn" id="mode-indian-btn" onclick="togglePredictMode('indian')">
+                                <i class="fa-solid fa-flag"></i> Indian Detailed Model
+                            </button>
+                        </div>
+
+                        <!-- GLOBAL MODEL INPUT FORM -->
+                        <div id="form-global">
+                            <div class="form-row">
+                                <div class="input-group">
+                                    <label for="global-area"><i class="fa-solid fa-earth-americas"></i> Country / Region</label>
+                                    <select id="global-area">
+                                        <!-- Will populate dynamically -->
+                                        <option value="India">India</option>
+                                        <option value="Egypt">Egypt</option>
+                                    </select>
+                                </div>
+                                <div class="input-group">
+                                    <label for="global-crop"><i class="fa-solid fa-wheat-awn"></i> Crop Item</label>
+                                    <select id="global-crop">
+                                        <!-- Will populate dynamically -->
+                                        <option value="Wheat">Wheat</option>
+                                        <option value="Rice, paddy">Rice, paddy</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="input-group">
+                                    <label for="global-year"><i class="fa-solid fa-calendar-days"></i> Forecasting Year</label>
+                                    <input type="number" id="global-year" min="1990" max="2050" value="2026">
+                                </div>
+                                <div class="input-group">
+                                    <label for="global-temp"><i class="fa-solid fa-temperature-half"></i> Avg Temperature (°C)</label>
+                                    <input type="number" id="global-temp" step="0.1" value="24.5">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="input-group">
+                                    <label for="global-rainfall"><i class="fa-solid fa-cloud-rain"></i> Annual Rainfall (mm)</label>
+                                    <input type="number" id="global-rainfall" step="1" value="850">
+                                </div>
+                                <div class="input-group">
+                                    <label for="global-pesticides"><i class="fa-solid fa-spray-can-sparkles"></i> Pesticides Used (tonnes)</label>
+                                    <input type="number" id="global-pesticides" step="0.1" value="250.0">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- INDIAN MODEL INPUT FORM -->
+                        <div id="form-indian" style="display: none;">
+                            <div class="form-row">
+                                <div class="input-group">
+                                    <label for="indian-state"><i class="fa-solid fa-map-location-dot"></i> State</label>
+                                    <select id="indian-state" onchange="updateDistricts()">
+                                        <option value="">Select State</option>
+                                    </select>
+                                </div>
+                                <div class="input-group">
+                                    <label for="indian-district"><i class="fa-solid fa-location-dot"></i> District</label>
+                                    <select id="indian-district">
+                                        <option value="">Select District</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="input-group">
+                                    <label for="indian-crop"><i class="fa-solid fa-wheat-awn"></i> Crop</label>
+                                    <select id="indian-crop">
+                                        <option value="Rice">Rice</option>
+                                        <option value="Wheat">Wheat</option>
+                                        <option value="Maize">Maize</option>
+                                    </select>
+                                </div>
+                                <div class="input-group">
+                                    <label for="indian-season"><i class="fa-solid fa-cloud-sun"></i> Cultivation Season</label>
+                                    <select id="indian-season">
+                                        <option value="Kharif">Kharif</option>
+                                        <option value="Rabi">Rabi</option>
+                                        <option value="Summer">Summer</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="input-group">
+                                    <label for="indian-area"><i class="fa-solid fa-chart-area"></i> Field Area (hectares)</label>
+                                    <input type="number" id="indian-area" min="0.1" max="100.0" step="0.1" value="2.5">
+                                </div>
+                                <div class="input-group">
+                                    <label for="indian-moisture"><i class="fa-solid fa-droplet"></i> Soil Moisture (%)</label>
+                                    <input type="number" id="indian-moisture" min="10" max="90" step="0.1" value="45.0">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="input-group">
+                                    <label for="indian-ph"><i class="fa-solid fa-flask"></i> Soil pH</label>
+                                    <input type="number" id="indian-ph" min="3.5" max="10.0" step="0.1" value="6.5">
+                                </div>
+                                <div class="input-group">
+                                    <label for="indian-temp"><i class="fa-solid fa-temperature-half"></i> Temperature (°C)</label>
+                                    <input type="number" id="indian-temp" step="0.1" value="26.0">
+                                </div>
+                                <div class="input-group">
+                                    <label for="indian-humidity"><i class="fa-solid fa-water"></i> Humidity (%)</label>
+                                    <input type="number" id="indian-humidity" min="10" max="100" step="0.1" value="65.0">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="input-group">
+                                    <label for="indian-rainfall"><i class="fa-solid fa-cloud-rain"></i> Rainfall (mm)</label>
+                                    <input type="number" id="indian-rainfall" step="1" value="650">
+                                </div>
+                                <div class="input-group">
+                                    <label for="indian-year"><i class="fa-solid fa-calendar-days"></i> Crop Year</label>
+                                    <input type="number" id="indian-year" min="2010" max="2040" value="2026">
+                                </div>
+                            </div>
+
+                            <!-- Soil Nutrients N-P-K -->
+                            <h4 style="font-size: 0.95rem; font-family: var(--font-display); font-weight: 700; margin: 1rem 0 0.75rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">
+                                <i class="fa-solid fa-flask-vial"></i> Soil Nutrients Configuration
+                            </h4>
+                            <div class="form-row">
+                                <div class="input-group">
+                                    <label for="indian-n">Nitrogen (N) kg/ha</label>
+                                    <input type="number" id="indian-n" min="10" max="250" value="110">
+                                </div>
+                                <div class="input-group">
+                                    <label for="indian-p">Phosphorus (P) kg/ha</label>
+                                    <input type="number" id="indian-p" min="5" max="120" value="45">
+                                </div>
+                                <div class="input-group">
+                                    <label for="indian-k">Potassium (K) kg/ha</label>
+                                    <input type="number" id="indian-k" min="10" max="300" value="85">
+                                </div>
+                            </div>
+
+                            <!-- Crop Health Indicators -->
+                            <h4 style="font-size: 0.95rem; font-family: var(--font-display); font-weight: 700; margin: 0.5rem 0 0.75rem;">
+                                <i class="fa-solid fa-bug"></i> Crop Protection Status
+                            </h4>
+                            <div class="form-row">
+                                <div class="input-group">
+                                    <label for="indian-pest">Pest Level (0 - 4)</label>
+                                    <select id="indian-pest">
+                                        <option value="0">0 - None (Excellent)</option>
+                                        <option value="1" selected>1 - Minor (Normal)</option>
+                                        <option value="2">2 - Moderate (Action Needed)</option>
+                                        <option value="3">3 - High Threat</option>
+                                        <option value="4">4 - Severe Outbreak</option>
+                                    </select>
+                                </div>
+                                <div class="input-group">
+                                    <label for="indian-disease">Disease Level (0 - 4)</label>
+                                    <select id="indian-disease">
+                                        <option value="0">0 - None (Excellent)</option>
+                                        <option value="1" selected>1 - Minor (Normal)</option>
+                                        <option value="2">2 - Moderate (Action Needed)</option>
+                                        <option value="3">3 - High Threat</option>
+                                        <option value="4">4 - Severe Infection</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Predict button -->
+                        <button class="btn" style="margin-top: 1rem;" onclick="triggerPrediction()">
+                            <i class="fa-solid fa-gear fa-spin-hover"></i> Calculate Expected Yield
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Output dashboard -->
+                <div>
+                    <div class="output-card" id="predictor-output-box">
+                        <h3 style="font-family: var(--font-display); font-weight: 700; font-size: 1.25rem; color: var(--text-primary);">Forecasting Engine Output</h3>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">Values update automatically after calculation</p>
+                        
+                        <!-- Yield Gauge -->
+                        <div class="gauge-wrapper">
+                            <svg class="gauge-svg">
+                                <circle class="gauge-bg" cx="100" cy="100" r="90"></circle>
+                                <circle class="gauge-fill" id="prediction-gauge-stroke" cx="100" cy="100" r="90"></circle>
+                            </svg>
+                            <div class="gauge-text">
+                                <span class="gauge-value" id="prediction-gauge-val">--</span>
+                                <span class="gauge-unit" id="prediction-gauge-unit">kg/ha</span>
+                            </div>
+                        </div>
+
+                        <!-- Details Grid -->
+                        <div class="result-details">
+                            <div class="result-detail-item">
+                                <div class="result-detail-label">Total Field Yield</div>
+                                <div class="result-detail-value" id="val-total-yield">--</div>
+                            </div>
+                            <div class="result-detail-item">
+                                <div class="result-detail-label" id="lbl-secondary-metric">Production</div>
+                                <div class="result-detail-value" id="val-secondary-metric">--</div>
+                            </div>
+                            <div class="result-detail-item" style="grid-column: span 2;">
+                                <div class="result-detail-label">Model Confidence Index</div>
+                                <div class="result-detail-value" id="val-uncertainty">--</div>
+                            </div>
+                        </div>
+
+                        <!-- Dynamic Advice Log -->
+                        <div class="advice-box">
+                            <div class="advice-header">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> AI Agronomic Recommendations
+                            </div>
+                            <div class="advice-list" id="advice-list-box">
+                                <div style="color: var(--text-muted); font-size: 0.85rem; font-style: italic; text-align: center; width: 100%; padding: 2rem 0;">
+                                    Fill the parameters and calculate prediction to generate dynamic recommendations.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Fullscreen zoom modal -->
+    <div class="zoom-modal" id="image-zoom-overlay">
+        <span class="close-zoom" onclick="closeZoom()">&times;</span>
+        <img id="zoomed-image-item" src="" alt="Zoomed Plot">
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 AgriPredict AI Unified Platform. Engineered with advanced machine learning for modern agriculture.</p>
+    </footer>
+
+    <!-- JS Scripts -->
+    <script>
+        // Global variables
+        let activeTab = 'analytics';
+        let activePredictMode = 'global';
+        let statesDistrictsData = {};
+        
+        // Date widget
+        document.getElementById('date-widget').innerText = new Date().toLocaleDateString(undefined, {
+            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+        });
+
+        // Theme Toggle
+        const themeBtn = document.getElementById('theme-toggle');
+        themeBtn.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            const icon = themeBtn.querySelector('i');
+            if (document.body.classList.contains('dark-mode')) {
+                icon.className = 'fa-solid fa-sun';
+            } else {
+                icon.className = 'fa-solid fa-moon';
+            }
+        });
+
+        // Switch Tabs
+        function switchTab(tabName) {
+            activeTab = tabName;
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            if (tabName === 'analytics') {
+                document.querySelector('[onclick="switchTab(\'analytics\')"]').classList.add('active');
+                document.getElementById('tab-analytics').classList.add('active');
+            } else {
+                document.querySelector('[onclick="switchTab(\'predict\')"]').classList.add('active');
+                document.getElementById('tab-predict').classList.add('active');
+            }
+        }
+
+        // Switch Model Plot (Analytics)
+        function switchModelPlot(modelName, buttonElement) {
+            document.querySelectorAll('.model-tab-btn').forEach(btn => btn.classList.remove('active'));
+            buttonElement.classList.add('active');
+            
+            document.getElementById('active-model-title').innerText = `${modelName}: Actual vs Predicted`;
+            document.getElementById('active-model-img').src = `/static/${modelName}_actual_vs_pred.png`;
+        }
+
+        function zoomActiveModel() {
+            const currentImgSrc = document.getElementById('active-model-img').src;
+            zoomImage(currentImgSrc);
+        }
+
+        // Image zoom modal handlers
+        function zoomImage(src) {
+            document.getElementById('zoomed-image-item').src = src;
+            document.getElementById('image-zoom-overlay').style.display = 'flex';
+        }
+
+        function closeZoom() {
+            document.getElementById('image-zoom-overlay').style.display = 'none';
+        }
+
+        // Hide overlay on press ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeZoom();
+        });
+
+        // Image loading fallback
+        function showImgFallback(img) {
+            const fallbackDiv = document.createElement('div');
+            fallbackDiv.className = 'img-fallback';
+            fallbackDiv.innerHTML = `
+                <i class="fa-solid fa-chart-area"></i>
+                <span style="font-weight: 600;">Image not loaded</span>
+                <span style="font-size: 0.8rem; max-width: 250px;">Please check if <b>${img.alt}</b> exists in project folder.</span>
+            `;
+            img.style.display = 'none';
+            img.parentNode.appendChild(fallbackDiv);
+        }
+
+        // Toggle Predict Mode
+        function togglePredictMode(mode) {
+            activePredictMode = mode;
+            document.getElementById('mode-global-btn').classList.remove('active');
+            document.getElementById('mode-indian-btn').classList.remove('active');
+            
+            document.getElementById('form-global').style.display = 'none';
+            document.getElementById('form-indian').style.display = 'none';
+            
+            if (mode === 'global') {
+                document.getElementById('mode-global-btn').classList.add('active');
+                document.getElementById('form-global').style.display = 'block';
+                document.getElementById('lbl-secondary-metric').innerText = 'Yield (hg/ha)';
+                document.getElementById('prediction-gauge-unit').innerText = 'kg/ha';
+            } else {
+                document.getElementById('mode-indian-btn').classList.add('active');
+                document.getElementById('form-indian').style.display = 'block';
+                document.getElementById('lbl-secondary-metric').innerText = 'Total Production';
+                document.getElementById('prediction-gauge-unit').innerText = 'kg/ha';
+            }
+            resetPredictorBox();
+        }
+
+        function resetPredictorBox() {
+            document.getElementById('prediction-gauge-val').innerText = '--';
+            document.getElementById('prediction-gauge-stroke').style.strokeDashoffset = '565';
+            document.getElementById('val-total-yield').innerText = '--';
+            document.getElementById('val-secondary-metric').innerText = '--';
+            document.getElementById('val-uncertainty').innerText = '--';
+            document.getElementById('advice-list-box').innerHTML = `
+                <div style="color: var(--text-muted); font-size: 0.85rem; font-style: italic; text-align: center; width: 100%; padding: 2rem 0;">
+                    Fill the parameters and calculate prediction to generate dynamic recommendations.
+                </div>
+            `;
+        }
+
+        // Fetch API settings on load
+        async function loadBackendData() {
+            try {
+                // Fetch stats and lists for global selector
+                const response = await fetch('/api/dashboard-data');
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    // Set stats counters
+                    if (data.stats) {
+                        document.getElementById('stat-records').innerText = `${data.stats.total_records.toLocaleString()} Rows`;
+                        document.getElementById('stat-yield').innerText = `${Math.round(data.stats.average_yield).toLocaleString()} hg/ha`;
+                        document.getElementById('stat-temp').innerText = `${data.stats.min_temp} - ${data.stats.max_temp} °C`;
+                        document.getElementById('stat-rain').innerText = `${Math.round(data.stats.min_rainfall).toLocaleString()} - ${Math.round(data.stats.max_rainfall).toLocaleString()} mm`;
+                    }
+                    
+                    // Populate Global areas
+                    const areaSelect = document.getElementById('global-area');
+                    areaSelect.innerHTML = '';
+                    data.areas.forEach(area => {
+                        const opt = document.createElement('option');
+                        opt.value = area;
+                        opt.textContent = area;
+                        if (area === 'India') opt.selected = true;
+                        areaSelect.appendChild(opt);
+                    });
+
+                    // Populate Global crops
+                    const cropSelect = document.getElementById('global-crop');
+                    cropSelect.innerHTML = '';
+                    data.crops.forEach(crop => {
+                        const opt = document.createElement('option');
+                        opt.value = crop;
+                        opt.textContent = crop;
+                        if (crop === 'Rice, paddy') opt.selected = true;
+                        cropSelect.appendChild(opt);
+                    });
+                }
+                
+                // Fetch Indian states list
+                const statesResponse = await fetch('/api/states');
+                if (statesResponse.ok) {
+                    const statesData = await statesResponse.json();
+                    const stateSelect = document.getElementById('indian-state');
+                    stateSelect.innerHTML = '<option value="">Select State</option>';
+                    statesData.states.forEach(state => {
+                        const opt = document.createElement('option');
+                        opt.value = state;
+                        opt.textContent = state;
+                        stateSelect.appendChild(opt);
+                    });
+                }
+            } catch (err) {
+                console.error("Failed loading backend config:", err);
+            }
+        }
+
+        // Update Districts select dynamically based on state
+        async function updateDistricts() {
+            const selectedState = document.getElementById('indian-state').value;
+            const districtSelect = document.getElementById('indian-district');
+            districtSelect.innerHTML = '<option value="">Select District</option>';
+            
+            if (!selectedState) return;
+            
+            try {
+                const response = await fetch(`/api/districts/${encodeURIComponent(selectedState)}`);
+                if (response.ok) {
+                    const distData = await response.json();
+                    distData.districts.forEach(dist => {
+                        const opt = document.createElement('option');
+                        opt.value = dist;
+                        opt.textContent = dist;
+                        districtSelect.appendChild(opt);
+                    });
+                }
+            } catch (err) {
+                console.error("Error fetching districts:", err);
+            }
+        }
+
+        // Live Geotelemetry fetching
+        async function fetchLiveTelemetry() {
+            const locationString = document.getElementById('location-input').value.trim();
+            if (!locationString) {
+                alert("Please enter a location/address first.");
+                return;
+            }
+            
+            const btn = document.getElementById('btn-fetch-telemetry');
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Fetching...';
+            btn.disabled = true;
+            
+            try {
+                // Get Coordinates
+                const coordResp = await fetch('/api/get-coordinates', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ location: locationString })
+                });
+                
+                if (!coordResp.ok) throw new Error("Location not resolved.");
+                const coordData = await coordResp.json();
+                
+                const lat = coordData.latitude;
+                const lon = coordData.longitude;
+                const addr = coordData.display_name;
+                
+                // Get Weather & Soil
+                const weatherPromise = fetch('/api/fetch-weather', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ latitude: lat, longitude: lon })
+                });
+                const soilPromise = fetch('/api/fetch-soil', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ latitude: lat, longitude: lon })
+                });
+                
+                const [weatherResp, soilResp] = await Promise.all([weatherPromise, soilPromise]);
+                if (!weatherResp.ok || !soilResp.ok) throw new Error("Telemetry values load failed.");
+                
+                const weatherData = await weatherResp.json();
+                const soilData = await soilResp.json();
+                
+                // Show telemetry console
+                document.getElementById('telemetry-status-box').style.display = 'flex';
+                document.getElementById('telemetry-address').innerText = addr.substring(0, 50) + (addr.length > 50 ? '...' : '');
+                document.getElementById('telemetry-coords').innerText = `${lat.toFixed(4)}° N, ${lon.toFixed(4)}° E`;
+                document.getElementById('telemetry-weather').innerHTML = `<i class="fa-solid fa-temperature-three-quarters" style="color:var(--accent)"></i> ${weatherData.temperature_celsius}°C | Humidity: ${weatherData.humidity_percent}% | Rain: ${Math.round(weatherData.rainfall_mm)}mm`;
+                document.getElementById('telemetry-soil').innerHTML = `<i class="fa-solid fa-flask" style="color:var(--secondary)"></i> pH: ${soilData.ph} | Nitrogen: ${Math.round(soilData.nitrogen_kg_per_ha)} kg/ha | <b>${soilData.soil_type}</b>`;
+                
+                // Auto fill forms based on active mode
+                if (activePredictMode === 'global') {
+                    document.getElementById('global-temp').value = weatherData.temperature_celsius;
+                    document.getElementById('global-rainfall').value = Math.round(weatherData.rainfall_mm);
+                    
+                    // Match country in selector if address has it
+                    const countrySelect = document.getElementById('global-area');
+                    for (let opt of countrySelect.options) {
+                        if (addr.toLowerCase().includes(opt.value.toLowerCase())) {
+                            opt.selected = true;
+                            break;
+                        }
+                    }
+                } else {
+                    document.getElementById('indian-temp').value = weatherData.temperature_celsius;
+                    document.getElementById('indian-rainfall').value = Math.round(weatherData.rainfall_mm);
+                    document.getElementById('indian-humidity').value = weatherData.humidity_percent;
+                    document.getElementById('indian-ph').value = soilData.ph;
+                    document.getElementById('indian-n').value = Math.round(soilData.nitrogen_kg_per_ha);
+                    
+                    // Match State if address has it
+                    const stateSelect = document.getElementById('indian-state');
+                    for (let opt of stateSelect.options) {
+                        if (addr.toLowerCase().includes(opt.value.toLowerCase())) {
+                            opt.selected = true;
+                            updateDistricts().then(() => {
+                                // Try matching district if possible
+                                const districtSelect = document.getElementById('indian-district');
+                                for (let dOpt of districtSelect.options) {
+                                    if (addr.toLowerCase().includes(dOpt.value.toLowerCase())) {
+                                        dOpt.selected = true;
+                                        break;
+                                    }
+                                }
+                            });
+                            break;
+                        }
+                    }
+                }
+            } catch (err) {
+                alert("Geo-telemetry fetch failed: " + err.message + ". Enter parameters manually.");
+            } finally {
+                btn.innerHTML = originalHtml;
+                btn.disabled = false;
+            }
+        }
+
+        // Trigger Yield Calculation API
+        async function triggerPrediction() {
+            let apiEndpoint = '';
+            let payload = {};
+            
+            if (activePredictMode === 'global') {
+                apiEndpoint = '/api/predict/global';
+                payload = {
+                    Area: document.getElementById('global-area').value,
+                    Item: document.getElementById('global-crop').value,
+                    Year: parseInt(document.getElementById('global-year').value),
+                    average_rain_fall_mm_per_year: parseFloat(document.getElementById('global-rainfall').value),
+                    pesticides_tonnes: parseFloat(document.getElementById('global-pesticides').value),
+                    avg_temp: parseFloat(document.getElementById('global-temp').value)
+                };
+                
+                if (!payload.Area || !payload.Item) {
+                    alert("Please select a valid Country and Crop Item.");
+                    return;
+                }
+            } else {
+                apiEndpoint = '/api/predict/indian';
+                payload = {
+                    state: document.getElementById('indian-state').value,
+                    district: document.getElementById('indian-district').value,
+                    crop_year: parseInt(document.getElementById('indian-year').value),
+                    season: document.getElementById('indian-season').value,
+                    crop: document.getElementById('indian-crop').value,
+                    area: parseFloat(document.getElementById('indian-area').value),
+                    soil_moisture: parseFloat(document.getElementById('indian-moisture').value),
+                    temperature: parseFloat(document.getElementById('indian-temp').value),
+                    humidity: parseFloat(document.getElementById('indian-humidity').value),
+                    ph: parseFloat(document.getElementById('indian-ph').value),
+                    rainfall: parseFloat(document.getElementById('indian-rainfall').value),
+                    nutrient_n: parseFloat(document.getElementById('indian-n').value),
+                    nutrient_p: parseFloat(document.getElementById('indian-p').value),
+                    nutrient_k: parseFloat(document.getElementById('indian-k').value),
+                    pest_level: parseInt(document.getElementById('indian-pest').value),
+                    disease_level: parseInt(document.getElementById('indian-disease').value)
+                };
+                
+                if (!payload.state || !payload.district) {
+                    alert("Please select a State and District.");
+                    return;
+                }
+            }
+            
+            try {
+                const response = await fetch(apiEndpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (!response.ok) {
+                    const errTxt = await response.text();
+                    throw new Error(errTxt || "Prediction API failed.");
+                }
+                
+                const result = await response.json();
+                renderPredictionResults(result);
+            } catch (err) {
+                alert("Prediction Error: " + err.message);
+            }
+        }
+
+        // Render predicted outputs to gauge & advice cards
+        function renderPredictionResults(result) {
+            const gaugeStroke = document.getElementById('prediction-gauge-stroke');
+            const valGauge = document.getElementById('prediction-gauge-val');
+            const valTotalYield = document.getElementById('val-total-yield');
+            const valSecondary = document.getElementById('val-secondary-metric');
+            const valUncertainty = document.getElementById('val-uncertainty');
+            
+            let predictedYield = 0; // kg/ha
+            let secondaryValue = '';
+            let secondaryLabel = '';
+            let confidence = 95.0; // %
+            
+            if (activePredictMode === 'global') {
+                predictedYield = result.predicted_yield_kg_per_ha;
+                valGauge.innerText = Math.round(predictedYield).toLocaleString();
+                document.getElementById('prediction-gauge-unit').innerText = 'kg/ha';
+                
+                valTotalYield.innerText = `${Math.round(predictedYield).toLocaleString()} kg/ha`;
+                valSecondary.innerText = `${Math.round(result.predicted_yield_hg_per_ha).toLocaleString()} hg/ha`;
+                valUncertainty.innerText = "96.8% (Pre-trained Model)";
+                
+                // Animate gauge based on realistic maximum yield boundary 6,000 kg/ha
+                const maxBoundary = 6000;
+                const pct = Math.min(predictedYield / maxBoundary, 1);
+                const dashOffset = 565 - (565 * pct);
+                gaugeStroke.style.strokeDashoffset = dashOffset;
+                
+                generateGlobalAdvice(payload = {
+                    crop: document.getElementById('global-crop').value,
+                    temp: parseFloat(document.getElementById('global-temp').value),
+                    rain: parseFloat(document.getElementById('global-rainfall').value),
+                    pest: parseFloat(document.getElementById('global-pesticides').value)
+                });
+            } else {
+                predictedYield = result.predicted_yield_kg_per_ha;
+                valGauge.innerText = Math.round(predictedYield).toLocaleString();
+                document.getElementById('prediction-gauge-unit').innerText = 'kg/ha';
+                
+                valTotalYield.innerText = `${Math.round(predictedYield).toLocaleString()} kg/ha`;
+                valSecondary.innerText = `${Math.round(result.total_production_kg).toLocaleString()} kg`;
+                
+                const uncertainty = result.prediction_uncertainty_percent;
+                confidence = Math.max(70.0, 100.0 - uncertainty);
+                valUncertainty.innerText = `${confidence.toFixed(1)}% Accuracy`;
+                
+                const maxBoundary = 6500;
+                const pct = Math.min(predictedYield / maxBoundary, 1);
+                const dashOffset = 565 - (565 * pct);
+                gaugeStroke.style.strokeDashoffset = dashOffset;
+                
+                generateIndianAdvice(payload = {
+                    crop: document.getElementById('indian-crop').value,
+                    ph: parseFloat(document.getElementById('indian-ph').value),
+                    moisture: parseFloat(document.getElementById('indian-moisture').value),
+                    n: parseFloat(document.getElementById('indian-n').value),
+                    p: parseFloat(document.getElementById('indian-p').value),
+                    k: parseFloat(document.getElementById('indian-k').value),
+                    pest: parseInt(document.getElementById('indian-pest').value),
+                    disease: parseInt(document.getElementById('indian-disease').value)
+                });
+            }
+        }
+
+        // Custom recommendations generator for Global Mode
+        function generateGlobalAdvice(data) {
+            const list = document.getElementById('advice-list-box');
+            list.innerHTML = '';
+            
+            let advices = [];
+            advices.push({
+                type: 'success',
+                text: `Model successfully evaluated matching crop parameters for <b>${data.crop}</b>.`
+            });
+            
+            if (data.temp > 28) {
+                advices.push({
+                    type: 'warning',
+                    text: `Average temperature is elevated (${data.temp}°C). Ensure supplemental soil irrigation routines during periods of low precipitation.`
+                });
+            }
+            if (data.rain < 400) {
+                advices.push({
+                    type: 'danger',
+                    text: `Precipitation falls below standard threshold (${data.rain}mm). Supplemental watering is critical to support baseline yield.`
+                });
+            }
+            if (data.pest > 400) {
+                advices.push({
+                    type: 'warning',
+                    text: `Heavy pesticide applications (${data.pest} tonnes) observed. Recommend scheduling soil health evaluations to track run-off impact.`
+                });
+            }
+            
+            renderAdvices(advices);
+        }
+
+        // Custom recommendations generator for Indian Mode
+        function generateIndianAdvice(data) {
+            const list = document.getElementById('advice-list-box');
+            list.innerHTML = '';
+            
+            let advices = [];
+            
+            // pH checks
+            if (data.ph < 5.8) {
+                advices.push({
+                    type: 'danger',
+                    text: `Acidic soil alert (pH: <b>${data.ph}</b>). Distortions block nutrient absorption. Apply agricultural lime (calcium carbonate) to raise pH.`
+                });
+            } else if (data.ph > 7.5) {
+                advices.push({
+                    type: 'warning',
+                    text: `Alkaline soil detected (pH: <b>${data.ph}</b>). Can lead to iron and zinc deficiency. Consider mixing organic compost or elemental sulfur.`
+                });
+            } else {
+                advices.push({
+                    type: 'success',
+                    text: `Soil pH level (<b>${data.ph}</b>) is ideal for standard crop nutrient uptake.`
+                });
+            }
+            
+            // Nutrients checks
+            if (data.n < 80) {
+                advices.push({
+                    type: 'danger',
+                    text: `Nitrogen level is deficient (${data.n} kg/ha). Apply nitrogenous fertilizers like urea or cultivate nitrogen-fixing cover crops.`
+                });
+            }
+            if (data.p < 30) {
+                advices.push({
+                    type: 'warning',
+                    text: `Phosphorus level is suboptimal (${data.p} kg/ha). Apply single superphosphate (SSP) to support root development.`
+                });
+            }
+            if (data.k < 60) {
+                advices.push({
+                    type: 'warning',
+                    text: `Potassium deficiency detected (${data.k} kg/ha). Recommend application of Muriate of Potash (MOP) to optimize grain quality.`
+                });
+            }
+            
+            // Pest and Disease checks
+            if (data.pest >= 2) {
+                advices.push({
+                    type: 'danger',
+                    text: `Pest alert (Level ${data.pest}). Deploy botanical insecticides (neem oil) or specific biopesticides immediately to limit leaf damage.`
+                });
+            }
+            if (data.disease >= 2) {
+                advices.push({
+                    type: 'danger',
+                    text: `Disease transmission alert (Level ${data.disease}). Remove infected foliage and apply appropriate fungicide/bactericide controls.`
+                });
+            }
+            
+            if (advices.length === 1 && advices[0].type === 'success') {
+                advices.push({
+                    type: 'success',
+                    text: "Outstanding soil bio-factors. Follow standard crop rotation practices."
+                });
+            }
+            
+            renderAdvices(advices);
+        }
+
+        function renderAdvices(advices) {
+            const list = document.getElementById('advice-list-box');
+            list.innerHTML = '';
+            
+            advices.forEach(adv => {
+                const card = document.createElement('div');
+                card.className = `advice-card ${adv.type}`;
+                
+                let iconClass = 'fa-solid fa-circle-check';
+                if (adv.type === 'warning') iconClass = 'fa-solid fa-circle-exclamation';
+                if (adv.type === 'danger') iconClass = 'fa-solid fa-triangle-exclamation';
+                
+                card.innerHTML = `
+                    <i class="${iconClass}" style="margin-top:2px;"></i>
+                    <div>${adv.text}</div>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        // Initialize on DOM load
+        window.addEventListener('DOMContentLoaded', () => {
+            loadBackendData();
+        });
+    </script>
+</body>
+</html>

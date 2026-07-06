@@ -1,0 +1,611 @@
+
+<div style="background-color: #f0f0f0;">Hello</div>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop Yield Analysis Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .dark-mode { background-color: #1f2937; color: #f9fafb; }
+        .dark-mode .bg-white { background-color: #374151; }
+        .dark-mode .text-gray-800 { color: #f9fafb; }
+        .dark-mode .bg-gray-100 { background-color: #4b5563; }
+        .dark-mode table thead { background-color: #4b5563; }
+        .dark-mode table tbody tr:nth-child(even) { background-color: #4b5563; }
+        .dark-mode table tbody tr:hover { background-color: #6b7280; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #e5e7eb; padding: 8px; text-align: left; }
+        th { background-color: #3b82f6; color: white; }
+        tbody tr:nth-child(even) { background-color: #f9fafb; }
+        tbody tr:hover { background-color: #e0f2fe; }
+        .placeholder-img { background-color: #f3f4f6; color: #6b7280; text-align: center; padding: 20px; border-radius: 8px; }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-100">
+    <div class="container mx-auto p-4 md:p-6">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-3xl font-bold text-gray-800">Crop Yield Analysis Dashboard</h1>
+            <button id="darkModeToggle" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">Toggle Dark Mode</button>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+            <p class="text-gray-600 mb-4">Generated on 2025-09-12 12:08:06. Dataset: (26297, 8) rows, columns: Area, Item, Year, hg/ha_yield, average_rain_fall_mm_per_year, pesticides_tonnes, avg_temp, Area_norm</p>
+
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">Debug Information</h2>
+            <p id="debug-info" class="text-red-600 mb-4">Checking for missing files...</p>
+
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">Key Visualizations</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                
+        <div>
+            <h3 class="text-lg font-medium">Correlation Heatmap</h3>
+            <img src="./correlation_heatmap.png" alt="Correlation Heatmap" class="w-full rounded-lg" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+            <div class="placeholder-img" style="display:none;">Image not found: correlation_heatmap.png</div>
+        </div>
+        
+        <div>
+            <h3 class="text-lg font-medium">Histograms</h3>
+            <img src="./histograms.png" alt="Histograms" class="w-full rounded-lg" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+            <div class="placeholder-img" style="display:none;">Image not found: histograms.png</div>
+        </div>
+        
+        <div>
+            <h3 class="text-lg font-medium">Pairplot</h3>
+            <img src="./pairplot.png" alt="Pairplot" class="w-full rounded-lg" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+            <div class="placeholder-img" style="display:none;">Image not found: pairplot.png</div>
+        </div>
+        
+        <div>
+            <h3 class="text-lg font-medium">Geospatial Plot</h3>
+            <img src="./geospatial_plot.png" alt="Geospatial Plot" class="w-full rounded-lg" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+            <div class="placeholder-img" style="display:none;">Image not found: geospatial_plot.png</div>
+        </div>
+        
+        <div>
+            <h3 class="text-lg font-medium">Area Histograms</h3>
+            <img src="./area_histograms.png" alt="Area Histograms" class="w-full rounded-lg" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+            <div class="placeholder-img" style="display:none;">Image not found: area_histograms.png</div>
+        </div>
+        
+        <div>
+            <h3 class="text-lg font-medium">Best Areas by Crop</h3>
+            <img src="./best_areas.png" alt="Best Areas by Crop" class="w-full rounded-lg" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+            <div class="placeholder-img" style="display:none;">Image not found: best_areas.png</div>
+        </div>
+        
+        <div>
+            <h3 class="text-lg font-medium">Pesticides vs Yield</h3>
+            <img src="./pesticides_scatter.png" alt="Pesticides vs Yield" class="w-full rounded-lg" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+            <div class="placeholder-img" style="display:none;">Image not found: pesticides_scatter.png</div>
+        </div>
+        
+        <div>
+            <h3 class="text-lg font-medium">Multiple Plots</h3>
+            <img src="./multiple_plots.png" alt="Multiple Plots" class="w-full rounded-lg" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+            <div class="placeholder-img" style="display:none;">Image not found: multiple_plots.png</div>
+        </div>
+        
+        <div>
+            <h3 class="text-lg font-medium">Linear Regression: Actual vs Predicted</h3>
+            <img src="./Linear Regression_actual_vs_pred.png" alt="Linear Regression: Actual vs Predicted" class="w-full rounded-lg" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+            <div class="placeholder-img" style="display:none;">Image not found: Linear Regression_actual_vs_pred.png</div>
+        </div>
+        
+        <div>
+            <h3 class="text-lg font-medium">Random Forest: Actual vs Predicted</h3>
+            <img src="./Random Forest_actual_vs_pred.png" alt="Random Forest: Actual vs Predicted" class="w-full rounded-lg" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+            <div class="placeholder-img" style="display:none;">Image not found: Random Forest_actual_vs_pred.png</div>
+        </div>
+        
+        <div>
+            <h3 class="text-lg font-medium">Gradient Boost: Actual vs Predicted</h3>
+            <img src="./Gradient Boost_actual_vs_pred.png" alt="Gradient Boost: Actual vs Predicted" class="w-full rounded-lg" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+            <div class="placeholder-img" style="display:none;">Image not found: Gradient Boost_actual_vs_pred.png</div>
+        </div>
+        
+        <div>
+            <h3 class="text-lg font-medium">XGBoost: Actual vs Predicted</h3>
+            <img src="./XGBoost_actual_vs_pred.png" alt="XGBoost: Actual vs Predicted" class="w-full rounded-lg" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+            <div class="placeholder-img" style="display:none;">Image not found: XGBoost_actual_vs_pred.png</div>
+        </div>
+        
+        <div>
+            <h3 class="text-lg font-medium">KNN: Actual vs Predicted</h3>
+            <img src="./KNN_actual_vs_pred.png" alt="KNN: Actual vs Predicted" class="w-full rounded-lg" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+            <div class="placeholder-img" style="display:none;">Image not found: KNN_actual_vs_pred.png</div>
+        </div>
+        
+        <div>
+            <h3 class="text-lg font-medium">Decision Tree: Actual vs Predicted</h3>
+            <img src="./Decision Tree_actual_vs_pred.png" alt="Decision Tree: Actual vs Predicted" class="w-full rounded-lg" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+            <div class="placeholder-img" style="display:none;">Image not found: Decision Tree_actual_vs_pred.png</div>
+        </div>
+        
+        <div>
+            <h3 class="text-lg font-medium">Bagging Regressor: Actual vs Predicted</h3>
+            <img src="./Bagging Regressor_actual_vs_pred.png" alt="Bagging Regressor: Actual vs Predicted" class="w-full rounded-lg" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+            <div class="placeholder-img" style="display:none;">Image not found: Bagging Regressor_actual_vs_pred.png</div>
+        </div>
+        
+            </div>
+
+            <h2 class="text-2xl font-semibold text-gray-800 mt-8 mb-4">Model Performance</h2>
+            <table border="1" class="dataframe table-auto w-full border-collapse">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Model</th>
+      <th>Accuracy</th>
+      <th>MSE</th>
+      <th>R2_score</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Linear Regression</td>
+      <td>7.372439</td>
+      <td>6.293719e+09</td>
+      <td>0.073724</td>
+    </tr>
+    <tr>
+      <td>Random Forest</td>
+      <td>98.562776</td>
+      <td>9.765432e+07</td>
+      <td>0.985628</td>
+    </tr>
+    <tr>
+      <td>Gradient Boost</td>
+      <td>83.113983</td>
+      <td>1.147346e+09</td>
+      <td>0.831140</td>
+    </tr>
+    <tr>
+      <td>XGBoost</td>
+      <td>97.431743</td>
+      <td>1.745042e+08</td>
+      <td>0.974317</td>
+    </tr>
+    <tr>
+      <td>KNN</td>
+      <td>28.903963</td>
+      <td>4.830727e+09</td>
+      <td>0.289040</td>
+    </tr>
+    <tr>
+      <td>Decision Tree</td>
+      <td>97.617385</td>
+      <td>1.618903e+08</td>
+      <td>0.976174</td>
+    </tr>
+    <tr>
+      <td>Bagging Regressor</td>
+      <td>98.588095</td>
+      <td>9.593398e+07</td>
+      <td>0.985881</td>
+    </tr>
+  </tbody>
+</table>
+
+            <h2 class="text-2xl font-semibold text-gray-800 mt-8 mb-4">Detailed Model Results</h2>
+            <table border="1" class="dataframe table-auto w-full border-collapse">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Model</th>
+      <th>Accuracy</th>
+      <th>MSE</th>
+      <th>MAE</th>
+      <th>MAPE</th>
+      <th>R2_score</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Linear Regression</td>
+      <td>0.073724</td>
+      <td>6.293719e+09</td>
+      <td>60955.317749</td>
+      <td>2.419536</td>
+      <td>0.073724</td>
+    </tr>
+    <tr>
+      <td>Random Forest</td>
+      <td>0.985628</td>
+      <td>9.765432e+07</td>
+      <td>3480.841065</td>
+      <td>0.102571</td>
+      <td>0.985628</td>
+    </tr>
+    <tr>
+      <td>Gradient Boost</td>
+      <td>0.831140</td>
+      <td>1.147346e+09</td>
+      <td>21184.660834</td>
+      <td>0.596784</td>
+      <td>0.831140</td>
+    </tr>
+    <tr>
+      <td>XGBoost</td>
+      <td>0.974317</td>
+      <td>1.745042e+08</td>
+      <td>7073.086914</td>
+      <td>0.198378</td>
+      <td>0.974317</td>
+    </tr>
+    <tr>
+      <td>KNN</td>
+      <td>0.289040</td>
+      <td>4.830727e+09</td>
+      <td>47667.896781</td>
+      <td>1.624089</td>
+      <td>0.289040</td>
+    </tr>
+    <tr>
+      <td>Decision Tree</td>
+      <td>0.976174</td>
+      <td>1.618903e+08</td>
+      <td>3559.269202</td>
+      <td>0.096101</td>
+      <td>0.976174</td>
+    </tr>
+    <tr>
+      <td>Bagging Regressor</td>
+      <td>0.985881</td>
+      <td>9.593398e+07</td>
+      <td>3450.508398</td>
+      <td>0.101199</td>
+      <td>0.985881</td>
+    </tr>
+  </tbody>
+</table>
+
+            <h2 class="text-2xl font-semibold text-gray-800 mt-8 mb-4">Yield Statistics by Area and Item</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div><h3 class="text-lg font-medium">Group 1</h3><table border="1" class="dataframe table-auto w-full border-collapse">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Area</th>
+      <th>Item</th>
+      <th>hg/ha_yield</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Australia</td>
+      <td>Potatoes</td>
+      <td>330944.826087</td>
+    </tr>
+    <tr>
+      <td>Argentina</td>
+      <td>Potatoes</td>
+      <td>262059.173913</td>
+    </tr>
+    <tr>
+      <td>Australia</td>
+      <td>Sweet potatoes</td>
+      <td>257610.826087</td>
+    </tr>
+    <tr>
+      <td>Brazil</td>
+      <td>Potatoes</td>
+      <td>196056.000000</td>
+    </tr>
+    <tr>
+      <td>Algeria</td>
+      <td>Potatoes</td>
+      <td>182413.956522</td>
+    </tr>
+  </tbody>
+</table></div><div><h3 class="text-lg font-medium">Group 2</h3><table border="1" class="dataframe table-auto w-full border-collapse">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Area</th>
+      <th>Item</th>
+      <th>hg/ha_yield</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Egypt</td>
+      <td>Sweet potatoes</td>
+      <td>261369.347826</td>
+    </tr>
+    <tr>
+      <td>Egypt</td>
+      <td>Potatoes</td>
+      <td>235444.956522</td>
+    </tr>
+    <tr>
+      <td>El Salvador</td>
+      <td>Potatoes</td>
+      <td>211362.304348</td>
+    </tr>
+    <tr>
+      <td>El Salvador</td>
+      <td>Plantains and others</td>
+      <td>198605.217391</td>
+    </tr>
+    <tr>
+      <td>Chile</td>
+      <td>Potatoes</td>
+      <td>184835.260870</td>
+    </tr>
+  </tbody>
+</table></div><div><h3 class="text-lg font-medium">Group 3</h3><table border="1" class="dataframe table-auto w-full border-collapse">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Area</th>
+      <th>Item</th>
+      <th>hg/ha_yield</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>France</td>
+      <td>Potatoes</td>
+      <td>395037.260870</td>
+    </tr>
+    <tr>
+      <td>Germany</td>
+      <td>Potatoes</td>
+      <td>386553.347826</td>
+    </tr>
+    <tr>
+      <td>Guatemala</td>
+      <td>Plantains and others</td>
+      <td>291096.304348</td>
+    </tr>
+    <tr>
+      <td>Guatemala</td>
+      <td>Potatoes</td>
+      <td>241157.869565</td>
+    </tr>
+    <tr>
+      <td>Hungary</td>
+      <td>Potatoes</td>
+      <td>210372.782609</td>
+    </tr>
+  </tbody>
+</table></div><div><h3 class="text-lg font-medium">Group 4</h3><table border="1" class="dataframe table-auto w-full border-collapse">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Area</th>
+      <th>Item</th>
+      <th>hg/ha_yield</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Japan</td>
+      <td>Potatoes</td>
+      <td>311005.260870</td>
+    </tr>
+    <tr>
+      <td>India</td>
+      <td>Cassava</td>
+      <td>282234.434783</td>
+    </tr>
+    <tr>
+      <td>Italy</td>
+      <td>Potatoes</td>
+      <td>237861.347826</td>
+    </tr>
+    <tr>
+      <td>Japan</td>
+      <td>Sweet potatoes</td>
+      <td>237639.391304</td>
+    </tr>
+    <tr>
+      <td>Japan</td>
+      <td>Yams</td>
+      <td>211343.434783</td>
+    </tr>
+  </tbody>
+</table></div><div><h3 class="text-lg font-medium">Group 5</h3><table border="1" class="dataframe table-auto w-full border-collapse">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Area</th>
+      <th>Item</th>
+      <th>hg/ha_yield</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Mexico</td>
+      <td>Potatoes</td>
+      <td>228553.695652</td>
+    </tr>
+    <tr>
+      <td>Morocco</td>
+      <td>Potatoes</td>
+      <td>217065.695652</td>
+    </tr>
+    <tr>
+      <td>Mauritius</td>
+      <td>Potatoes</td>
+      <td>211356.869565</td>
+    </tr>
+    <tr>
+      <td>Mali</td>
+      <td>Potatoes</td>
+      <td>195653.869565</td>
+    </tr>
+    <tr>
+      <td>Mexico</td>
+      <td>Sweet potatoes</td>
+      <td>194611.913043</td>
+    </tr>
+  </tbody>
+</table></div><div><h3 class="text-lg font-medium">Group 6</h3><table border="1" class="dataframe table-auto w-full border-collapse">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Area</th>
+      <th>Item</th>
+      <th>hg/ha_yield</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>South Africa</td>
+      <td>Potatoes</td>
+      <td>297195.434783</td>
+    </tr>
+    <tr>
+      <td>Spain</td>
+      <td>Potatoes</td>
+      <td>251421.695652</td>
+    </tr>
+    <tr>
+      <td>Saudi Arabia</td>
+      <td>Potatoes</td>
+      <td>223336.652174</td>
+    </tr>
+    <tr>
+      <td>Senegal</td>
+      <td>Potatoes</td>
+      <td>180499.608696</td>
+    </tr>
+    <tr>
+      <td>Papua New Guinea</td>
+      <td>Yams</td>
+      <td>172521.173913</td>
+    </tr>
+  </tbody>
+</table></div><div><h3 class="text-lg font-medium">Group 7</h3><table border="1" class="dataframe table-auto w-full border-collapse">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Area</th>
+      <th>Item</th>
+      <th>hg/ha_yield</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>United Kingdom</td>
+      <td>Potatoes</td>
+      <td>406131.695652</td>
+    </tr>
+    <tr>
+      <td>Turkey</td>
+      <td>Potatoes</td>
+      <td>265486.565217</td>
+    </tr>
+    <tr>
+      <td>Suriname</td>
+      <td>Plantains and others</td>
+      <td>253966.913043</td>
+    </tr>
+    <tr>
+      <td>Suriname</td>
+      <td>Cassava</td>
+      <td>191282.478261</td>
+    </tr>
+    <tr>
+      <td>Tajikistan</td>
+      <td>Potatoes</td>
+      <td>176549.190476</td>
+    </tr>
+  </tbody>
+</table></div>
+            </div>
+
+            <h2 class="text-2xl font-semibold text-gray-800 mt-8 mb-4">Real-Time Prediction</h2>
+            <div class="bg-gray-100 p-6 rounded-lg">
+                <p class="text-gray-600 mb-4">Enter values to predict crop yield (hg/ha). Uses Linear Regression coefficients for demo purposes.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-gray-700">Area (encoded)</label>
+                        <input type="number" id="area" value="0" class="w-full p-2 border rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700">Item (encoded)</label>
+                        <input type="number" id="item" value="0" class="w-full p-2 border rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700">Year</label>
+                        <input type="number" id="year" value="2000" class="w-full p-2 border rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700">Avg Rain (mm)</label>
+                        <input type="number" id="rain" value="1000" class="w-full p-2 border rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700">Pesticides (tonnes)</label>
+                        <input type="number" id="pest" value="500" class="w-full p-2 border rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700">Avg Temp (°C)</label>
+                        <input type="number" id="temp" value="25" class="w-full p-2 border rounded-lg">
+                    </div>
+                </div>
+                <button onclick="predictYield()" class="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">Predict Yield</button>
+                <p id="real-time-pred" class="mt-4 text-lg font-semibold text-green-600">Prediction will appear here</p>
+                <p class="text-gray-600 mt-2">For accurate predictions, deploy with a server (e.g., Flask) using the saved model.</p>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Dark mode toggle
+        document.getElementById('darkModeToggle').addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+        });
+
+        // Check for missing images
+        const images = [
+            './correlation_heatmap.png',
+            './histograms.png',
+            './pairplot.png',
+            './geospatial_plot.png',
+            './area_histograms.png',
+            './best_areas.png',
+            './pesticides_scatter.png',
+            './multiple_plots.png',
+            './Linear Regression_actual_vs_pred.png',
+            './Random Forest_actual_vs_pred.png',
+            './Gradient Boost_actual_vs_pred.png',
+            './XGBoost_actual_vs_pred.png',
+            './KNN_actual_vs_pred.png',
+            './Decision Tree_actual_vs_pred.png',
+            './Bagging Regressor_actual_vs_pred.png'
+        ];
+        let missingFiles = [];
+        images.forEach(src => {
+            const img = new Image();
+            img.src = src;
+            img.onerror = () => missingFiles.push(src);
+        });
+        setTimeout(() => {
+            document.getElementById('debug-info').innerText = missingFiles.length ? 
+                `Missing files: ${missingFiles.join(', ')}` : 
+                'All files loaded successfully';
+        }, 1000);
+
+        // Load model coefficients
+        fetch('./model_coefficients.json')
+            .then(response => response.json())
+            .then(coefficients => {
+                window.modelCoefficients = coefficients;
+            })
+            .catch(() => {
+                window.modelCoefficients = { coef: [0, 0, 0, 0, 0, 0], intercept: 0 };
+                document.getElementById('debug-info').innerText += ' | Failed to load model_coefficients.json (using defaults)';
+            });
+
+        // Prediction function
+        function predictYield() {
+            const area = parseFloat(document.getElementById('area').value) || 0;
+            const item = parseFloat(document.getElementById('item').value) || 0;
+            const year = parseFloat(document.getElementById('year').value) || 2000;
+            const rain = parseFloat(document.getElementById('rain').value) || 1000;
+            const pest = parseFloat(document.getElementById('pest').value) || 500;
+            const temp = parseFloat(document.getElementById('temp').value) || 25;
+            const features = [area, item, year, rain, pest, temp];
+            let pred = window.modelCoefficients.intercept || 0;
+            for (let i = 0; i < features.length; i++) {
+                pred += (window.modelCoefficients.coef[i] || 0) * features[i];
+            }
+            document.getElementById('real-time-pred').innerText = `Predicted Yield (hg/ha): ${pred.toFixed(2)}`;
+        }
+    </script>
+</body>
+</html>
