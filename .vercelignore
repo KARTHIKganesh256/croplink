@@ -1,0 +1,11 @@
+# Ignore large machine learning models for Vercel functions
+best_model.pkl
+croplink_model.pkl
+croplink_encoders.pkl
+*.log
+venv/
+env/
+.venv/
+.git/
+.gemini/
+antigravity-ide/
