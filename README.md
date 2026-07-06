@@ -1,7 +1,7 @@
-# AgriPredict AI 🌾
+# CropLink 🌾
 > Advanced Crop Yield Analytics & Real-Time AI Prediction Platform
 
-AgriPredict AI is a premium, unified crop yield prediction and agricultural analytics platform. By merging the predictive analytics of a global FAO crop dataset with live geo-telemetry API integrations (weather and soil), the platform enables farmers, agronomists, and researchers to forecast yield in real-time and obtain actionable agronomic advice.
+CropLink is a premium, unified crop yield prediction and agricultural analytics platform. By merging the predictive analytics of a global FAO crop dataset with live geo-telemetry API integrations (weather and soil), the platform enables farmers, agronomists, and researchers to forecast yield in real-time and obtain actionable agronomic advice.
 
 ---
 

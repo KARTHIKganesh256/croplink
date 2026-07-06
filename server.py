@@ -125,7 +125,7 @@ def get_coordinates():
         if not data or 'location' not in data:
             return jsonify({"error": "Missing location string"}), 400
         
-        geolocator = Nominatim(user_agent="agripredict_ai_platform")
+        geolocator = Nominatim(user_agent="croplink_ai_platform")
         location = geolocator.geocode(data['location'], timeout=10)
         if not location:
             return jsonify({"error": "Location not found"}), 404
@@ -300,7 +300,7 @@ def predict_global():
         # Send SMS via Twilio (fail-safe)
         if twilio_client:
             try:
-                msg_body = f"AgriPredict Update: Global model yield prediction for {item} in {area} is {prediction:.2f} hg/ha."
+                msg_body = f"CropLink Update: Global model yield prediction for {item} in {area} is {prediction:.2f} hg/ha."
                 message = twilio_client.messages.create(
                     body=msg_body,
                     from_='+18777804236',
