@@ -295,7 +295,35 @@ def predict_global():
         ]], columns=['Area', 'Item', 'Year', 'average_rain_fall_mm_per_year', 'pesticides_tonnes', 'avg_temp'])
         
         # Predict
-        prediction = float(global_model.predict(features)[0])
+        if global_model is not None:
+            prediction = float(global_model.predict(features)[0])
+        else:
+            # Fallback to linear regression coefficients from model_coefficients.json (164 bytes)
+            logging.warning("global_model is not loaded. Falling back to Linear Regression coefficients.")
+            coefs_file = 'model_coefficients.json'
+            if not os.path.exists(coefs_file):
+                coefs_file = os.path.join('croplink', 'model_coefficients.json')
+                
+            if os.path.exists(coefs_file):
+                with open(coefs_file, 'r') as f:
+                    coef_data = json.load(f)
+                coef = coef_data['coef']
+                intercept = coef_data['intercept']
+                
+                # Linear Regression Equation:
+                # intercept + coef[0]*Area + coef[1]*Item + coef[2]*Year + coef[3]*Rain + coef[4]*Pesticides + coef[5]*Temp
+                pred_val = (
+                    intercept +
+                    coef[0] * area_enc +
+                    coef[1] * item_enc +
+                    coef[2] * int(data['Year']) +
+                    coef[3] * float(data['average_rain_fall_mm_per_year']) +
+                    coef[4] * float(data['pesticides_tonnes']) +
+                    coef[5] * float(data['avg_temp'])
+                )
+                prediction = float(pred_val)
+            else:
+                raise FileNotFoundError("Neither best_model.pkl nor model_coefficients.json were found.")
         
         # Send SMS via Twilio (fail-safe)
         if twilio_client:

@@ -164,9 +164,12 @@ def get_or_train_model():
     model = RandomForestRegressor(n_estimators=30, max_depth=12, random_state=42)
     model.fit(X, y)
     
-    joblib.dump(model, MODEL_PATH)
-    joblib.dump(encoders, ENCODERS_PATH)
-    print("Model trained and encoders saved successfully.")
+    try:
+        joblib.dump(model, MODEL_PATH)
+        joblib.dump(encoders, ENCODERS_PATH)
+        print("Model trained and encoders saved successfully.")
+    except Exception as write_err:
+        print(f"Warning: Could not save model/encoders to disk (read-only filesystem): {write_err}")
     
     return model, encoders
 
